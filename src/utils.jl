@@ -41,3 +41,11 @@ function packset(elements, indexmap::Dict)
     end
     return b
 end
+
+function unmapidxs(set, gs::Vector{T}) where T
+    out = Vector{T}()
+    for idx in set
+        push!(out, gs[idx])
+    end
+    return out
+end

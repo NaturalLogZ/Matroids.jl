@@ -1,11 +1,12 @@
 module Matroids
 
+import Combinatorics: combinations
 
-export AbstractMatroid, BasisMatroid,
+export AbstractMatroid, BasisMatroid, Matroid,
 
 rank, groundset, size, corank,
 
-isvalid,
+isvalidmatroid,
 
 circuits, cocircuits, bases, nonbases,
 flats, coflats, hyperplanes, brokencircuits,
@@ -16,7 +17,11 @@ isisomorphic, equals,
 
 contract, delete, dual, hasminor,
 
-tuttepolynomial
+tuttepolynomial,
+
+
+# temp
+_rank
 
 
 
@@ -27,7 +32,88 @@ tuttepolynomial
 
 include("./interface.jl")
 include("./utils.jl")
+include("./core.jl")
 
 include("./basismatroid.jl")
+
+
+
+
+# Put all matroid implementations before here
+
+function Matroid(groundset=nothing, data=nothing; kwargs...)
+    if isnothing(data)
+        if :bases in keys(kwargs)
+            bases = kwargs[:bases]
+            if isnothing(groundset)
+                groundset = Vector()
+                for b in bases
+                    union!(groundset, b)
+                end
+            end
+            M = BasisMatroid(gs=groundset, bs=bases)
+            
+        elseif :independentsets in keys(kwargs)
+            isets = kwargs[:independentsets]
+
+            rk = -1
+
+            if isnothing(groundset)
+                groundset = Vector()
+                for i in isets
+                    union!(groundset, i)
+                end
+            end
+
+            # cast a type so stuff doesn't mess up so badly.
+            if eltype(eltype(isets)) == Any
+                isets = convert(Vector{Vector{eltype(groundset)}}, isets)
+            end
+            for iset in isets
+                if length(iset) == rk
+                    push!(bases, iset)
+                elseif length(iset) > rk
+                    bases = [iset]
+                    rk = length(iset)
+                end
+            end
+            
+            M = BasisMatroid(gs=groundset, bs=bases)
+
+        elseif :circuits in keys(kwargs)
+            circuits = kwargs[:circuits]
+
+            if isnothing(groundset)
+                groundset = Vector()
+                for c in circuits
+                    union!(groundset, c)
+                end
+            end
+
+            # construct a basis element to determine rank
+            b = Set(groundset)
+            for circuit in circuits
+                int = intersect(b, circuit)
+                if length(int) >= length(circuit)
+                    delete!(b, pop!(int))
+                end
+            end
+            rk = length(b)
+
+            # try the comprehension
+            bases = [candidate for candidate in combinations(groundset, rk) if !any(circuit->issubset(circuit, candidate), circuits)]
+            M = BasisMatroid(gs=groundset, bs=bases)
+
+        end
+
+    end
+
+    return M
+
+end
+
+
+# Put other complicated things after...
+
 
 end

@@ -29,6 +29,8 @@ abstract type AbstractMatroid{T} end
 
 # The following I think is a far upper limit to what we should attempt
 rank(M::AbstractMatroid) = _NI("rank") # corresponds to full_rank
+rank(M::AbstractMatroid, X::Vector) = _NI("rank func set")
+_rank(M::AbstractMatroid, X::Vector) = _NI("unsafe rank func set")
 groundset(M::AbstractMatroid) = _NI("groundset")
 size(M::AbstractMatroid) = _NI("size")
 corank(M::AbstractMatroid) = _NI("corank") # corresponds to full_corank

@@ -1,4 +1,7 @@
-
+# TODO: figure out what to do about these variable names
+# for example, using gs instead of groundset as a variable,
+# since we have groundset as a function; and we actually call 
+# that function within the same scope.
 
 mutable struct BasisMatroid{T} <: AbstractMatroid{T}
     gs::Vector{T}
@@ -114,3 +117,101 @@ end
 rank(M::BasisMatroid) = M.rk
 groundset(M::BasisMatroid) = M.gs
 
+
+function bases(M::BasisMatroid)
+    r = rank(M)
+    n = size(M)
+
+    allbases = Vector()
+    for bindex in M.bb
+        basisset = indextoset(bindex, r, n)
+        basis = unmapidxs(basisset, M.gs)
+        println(basis)
+        push!(allbases, basis)
+    end
+    return allbases
+end
+
+function _rank(M::BasisMatroid, X::Vector)
+    packedinput = packset(X, M.idxs)
+    # then find max indep set
+
+    currentbasis = indextoset(first(M.bb), rank(M), size(M))
+    inside = setdiff(currentbasis, packedinput)
+    outside = setdiff(packedinput, currentbasis)
+
+    # then __move
+    for x in inside
+        for y in outside
+            # this corresponds to __is_exchange_pair
+            cp = copy(currentbasis)
+            delete!(cp, x)
+            push!(cp, y)
+            if in(settoindex(cp), M.bb)
+                currentbasis = cp
+                delete!(inside, x)
+                delete!(outside, y)
+                break
+            end
+        end
+    end
+    #
+    return length(intersect(currentbasis, packedinput))
+
+end
+
+function isvalidmatroid(M::BasisMatroid)
+    r = rank(M)
+    n = size(M)
+    currentbasis = indextoset(first(M.bb), r, n)
+    
+    for indexX in M.bb
+        subsetX = indextoset(indexX, r, n)
+        for indexY in M.bb
+            subsetY = indextoset(indexY, r, n)
+            inside = setdiff(currentbasis, subsetY)
+            outside = setdiff(subsetY, currentbasis)
+
+            # __move (copied from above)
+            # try to get from this basis to Y using exchanges.
+            for x in inside
+                for y in outside
+                    # this corresponds to __is_exchange_pair
+                    cp = copy(currentbasis)
+                    delete!(cp, x)
+                    push!(cp, y)
+                    if in(settoindex(cp), M.bb)
+                        currentbasis = cp
+                        delete!(inside, x)
+                        delete!(outside, y)
+                        break
+                    end
+                end
+            end
+            if currentbasis != subsetY
+                # violates exchange axiom
+                return false
+            end
+
+            input1 = setdiff(subsetX, subsetY)
+            input2 = setdiff(subsetY, subsetX)
+            
+            for x in input1
+                foundpair = false
+                for y in input2
+                    cp = copy(currentbasis)
+                    delete!(cp, y)
+                    push!(cp, x)
+                    if in(settoindex(cp), M.bb)
+                        foundpair = true
+                        break
+                    end
+                end
+                if !foundpair
+                    return false
+                end
+            end
+        end
+    end
+    return true
+end
