@@ -1,22 +1,32 @@
 module Matroids
 
 
-export AbstractMatroid, BasisMatroid
+export AbstractMatroid, BasisMatroid,
 
-"""
-    AbstractMatroid
+rank, groundset, size, corank,
 
-An abstract type representing a matroid.
-"""
-abstract type AbstractMatroid end
+isvalid,
 
-# I don't if it needs to be parametric... but abstract graph is parametric.
-# For now, I guess we assume the ground set is made up of integers. 
-# If we want to be able to have groundsets of different kinds of things, we would make this parametric.
+circuits, cocircuits, bases, nonbases,
+flats, coflats, hyperplanes, brokencircuits,
+
+loops, coloops,
+
+isisomorphic, equals,
+
+contract, delete, dual, hasminor,
+
+tuttepolynomial
+
+
+
+
 
 # We will want to do some sort of checking to make sure all the things
 # are implemented. (See LightGraphs interface.jl)
 
+include("./interface.jl")
+include("./utils.jl")
 
 include("./basismatroid.jl")
 

@@ -1,25 +1,23 @@
 
 
-mutable struct BasisMatroid <: AbstractMatroid
-    gs::Vector{Int}
+mutable struct BasisMatroid{T} <: AbstractMatroid{T}
+    gs::Vector{T}
     rk::Int
     bb::BitSet
     bcount::Int
-    idxs::Dict{Int,Int}
+    idxs::Dict{T,Int}
 
-
-    function BasisMatroid(;M::Union{AbstractMatroid, Nothing}=nothing, 
-                          gs::Union{Vector{Int}, Nothing}=nothing, 
-                          bs::Union{Vector{Vector{Int}}, Nothing}=nothing, 
-                          nbs::Union{Vector{Vector{Int}}, Nothing}=nothing, 
-                          rk::Union{Int, Nothing}=nothing)
+    function BasisMatroid{T}(;M::Union{AbstractMatroid{T}, Nothing}=nothing, 
+                          gs::Union{Vector{T}, Nothing}=nothing, 
+                          bs::Union{Vector{Vector{T}}, Nothing}=nothing, 
+                          nbs::Union{Vector{Vector{T}}, Nothing}=nothing, 
+                          rk::Union{Int, Nothing}=nothing) where T
 
         # TODO: first check stuff about M
         # it is possible to do things more efficiently if M is already a Basis Matroid
 
-
         if !isnothing(M)
-            rk = full_rank(M)
+            rk = rank(M)
             nbs = nonbases(M)
             gs = sort(groundset(M))
         end
@@ -51,18 +49,10 @@ mutable struct BasisMatroid <: AbstractMatroid
         # we have a dictionary _idx 
         # that maps from elements of the ground set
         # to integers
-        idxs = Dict()
+        idxs = Dict{T,Int}()
         for i in 1:length(gs)
             idxs[gs[i]] = i
         end
-
-        
-
-        # then for every basis
-        # check if it is a subset of the groundset (how to do efficeintly?)
-        # store the basis as a bitset
-        # i = settoindex of this bitset
-
 
         bb = BitSet()
         bcount = 0
@@ -106,50 +96,21 @@ mutable struct BasisMatroid <: AbstractMatroid
                 end
             end
         end
-
-        
-        return new(gs,rk,bb,bcount,idxs)
+        return new{T}(gs,rk,bb,bcount,idxs)
     end
 
 end
 
-"""
-Compute the rank of a set of integers amongst the sets of integers 
-of the same cardinality.
-Assume sets have values >= 1.
-"""
-function settoindex(a::BitSet)
-    index = 1
-    count = 1
-    for s in a
-        index += binomial(s-1, count)
-        count += 1
-    end
-    return index
+function BasisMatroid(;M::Union{AbstractMatroid{T}, Nothing}=nothing, 
+    gs::Union{Vector{T}, Nothing}=nothing, 
+    bs::Union{Vector{Vector{T}}, Nothing}=nothing, 
+    nbs::Union{Vector{Vector{T}}, Nothing}=nothing, 
+    rk::Union{Int, Nothing}=nothing) where T
+
+    return BasisMatroid{T}(M=M,gs=gs,bs=bs,nbs=nbs,rk=rk)
 end
 
-"""
-Given an index, number of elements and some large enough n,
-recover the set.
-"""
-function indextoset(index::Int, k::Int, n::Int)
-    a = BitSet()
-    s = n + 1
-    while s > 1
-        s -= 1
-        if binomial(s-1,k) < index
-            index -= binomial(s-1,k)
-            k -= 1
-            push!(a, s)
-        end
-    end
-    return a
-end
 
-function packset(elements, indexmap::Dict)
-    b = BitSet()
-    for el in elements
-        push!(b, indexmap[el])
-    end
-    return b
-end
+rank(M::BasisMatroid) = M.rk
+groundset(M::BasisMatroid) = M.gs
+
