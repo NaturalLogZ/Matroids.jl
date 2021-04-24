@@ -1,49 +1,47 @@
-# TODO: figure out what to do about these variable names
-# for example, using gs instead of groundset as a variable,
-# since we have groundset as a function; and we actually call 
-# that function within the same scope.
+
 
 mutable struct BasisMatroid{T} <: AbstractMatroid{T}
-    gs::Vector{T}
-    rk::Int
-    bb::BitSet
+    groundset::Vector{T}
+    rank::Int
+    bitbases::BitSet
     bcount::Int
-    idxs::Dict{T,Int}
+    elmap::Dict{T,Int}
 
     function BasisMatroid{T}(;M::Union{AbstractMatroid{T}, Nothing}=nothing, 
-                          gs::Union{Vector{T}, Nothing}=nothing, 
-                          bs::Union{Vector{Vector{T}}, Nothing}=nothing, 
-                          nbs::Union{Vector{Vector{T}}, Nothing}=nothing, 
-                          rk::Union{Int, Nothing}=nothing) where T
+                          groundset::Union{Vector{T}, Nothing}=nothing, 
+                          bases::Union{Vector{Vector{T}}, Nothing}=nothing, 
+                          nonbases::Union{Vector{Vector{T}}, Nothing}=nothing, 
+                          rank::Union{Int, Nothing}=nothing) where T
 
         # TODO: first check stuff about M
         # it is possible to do things more efficiently if M is already a Basis Matroid
 
         if !isnothing(M)
-            rk = rank(M)
-            nbs = nonbases(M)
-            gs = sort(groundset(M))
+            rank = Matroids.rank(M)
+            bases = Matroids.bases(M)
+            #nonbases = Matroids.nonbases(M) use this over bases when implemented (supposedly faster)
+            groundset = sort(Matroids.groundset(M))
         end
         
-        if isnothing(gs)
-            gs = Int[]
+        if isnothing(groundset)
+            groundset = Int[]
         end
 
-        if !allunique(gs)
+        if !allunique(groundset)
             error("ground set has repeated elements")
         end
 
-        if !isnothing(bs) && length(bs) == 0
+        if !isnothing(bases) && length(bases) == 0
             error("set of bases must be nonempty")
         end
 
-        if isnothing(rk)
-            if !isnothing(bs)
-                rk = length(bs[1])
-            elseif !isnothing(nbs)
-                rk = length(nbs[1])
+        if isnothing(rank)
+            if !isnothing(bases)
+                rank = length(bases[1])
+            elseif !isnothing(nonbases)
+                rank = length(nonbases[1])
             else
-                rk = 0
+                rank = 0
             end
         end
 
@@ -53,21 +51,21 @@ mutable struct BasisMatroid{T} <: AbstractMatroid{T}
         # that maps from elements of the ground set
         # to integers
         idxs = Dict{T,Int}()
-        for i in 1:length(gs)
-            idxs[gs[i]] = i
+        for i in 1:length(groundset)
+            idxs[groundset[i]] = i
         end
 
         bb = BitSet()
         bcount = 0
 
-        if !isnothing(bs)
+        if !isnothing(bases)
             bcount = 0
-            for B in bs
+            for B in bases
                 b = Set(B)
-                if length(b) != rk
+                if length(b) != rank
                     error("basis has wrong cardinality")
                 end
-                if !issubset(b, gs)
+                if !issubset(b, groundset)
                     error("basis is not subset of the groundset")
                 end
                 bitbasis = packset(b, idxs)
@@ -79,15 +77,15 @@ mutable struct BasisMatroid{T} <: AbstractMatroid{T}
                 push!(bb, i)
             end
         else
-            bcount = binomial(length(gs),rk)
+            bcount = binomial(length(groundset),rank)
             bb = BitSet(1:bcount)
-            if !isnothing(nbs)
-                for B in nbs
+            if !isnothing(nonbases)
+                for B in nonbases
                     b = Set(B)
-                    if length(b) != rk
+                    if length(b) != rank
                         error("nonbasis has wrong cardinality")
                     end
-                    if !issubset(b, gs)
+                    if !issubset(b, groundset)
                         error("nonbasis is not subset of the groundset")
                     end
                     bitnonbasis = packset(b, idxs)
@@ -99,23 +97,23 @@ mutable struct BasisMatroid{T} <: AbstractMatroid{T}
                 end
             end
         end
-        return new{T}(gs,rk,bb,bcount,idxs)
+        return new{T}(groundset,rank,bb,bcount,idxs)
     end
 
 end
 
 function BasisMatroid(;M::Union{AbstractMatroid{T}, Nothing}=nothing, 
-    gs::Union{Vector{T}, Nothing}=nothing, 
-    bs::Union{Vector{Vector{T}}, Nothing}=nothing, 
-    nbs::Union{Vector{Vector{T}}, Nothing}=nothing, 
-    rk::Union{Int, Nothing}=nothing) where T
+    groundset::Union{Vector{T}, Nothing}=nothing, 
+    bases::Union{Vector{Vector{T}}, Nothing}=nothing, 
+    nonbases::Union{Vector{Vector{T}}, Nothing}=nothing, 
+    rank::Union{Int, Nothing}=nothing) where T
 
-    return BasisMatroid{T}(M=M,gs=gs,bs=bs,nbs=nbs,rk=rk)
+    return BasisMatroid{T}(M=M,groundset=groundset,bases=bases,nonbases=nonbases,rank=rank)
 end
 
 
-rank(M::BasisMatroid) = M.rk
-groundset(M::BasisMatroid) = M.gs
+rank(M::BasisMatroid) = M.rank
+groundset(M::BasisMatroid) = M.groundset
 
 
 function bases(M::BasisMatroid)
@@ -123,20 +121,19 @@ function bases(M::BasisMatroid)
     n = size(M)
 
     allbases = Vector()
-    for bindex in M.bb
+    for bindex in M.bitbases
         basisset = indextoset(bindex, r, n)
-        basis = unmapidxs(basisset, M.gs)
-        println(basis)
+        basis = unmapidxs(basisset, M.groundset)
         push!(allbases, basis)
     end
     return allbases
 end
 
 function _rank(M::BasisMatroid, X::Vector)
-    packedinput = packset(X, M.idxs)
+    packedinput = packset(X, M.elmap)
     # then find max indep set
 
-    currentbasis = indextoset(first(M.bb), rank(M), size(M))
+    currentbasis = indextoset(first(M.bitbases), rank(M), size(M))
     inside = setdiff(currentbasis, packedinput)
     outside = setdiff(packedinput, currentbasis)
 
@@ -147,7 +144,7 @@ function _rank(M::BasisMatroid, X::Vector)
             cp = copy(currentbasis)
             delete!(cp, x)
             push!(cp, y)
-            if in(settoindex(cp), M.bb)
+            if in(settoindex(cp), M.bitbases)
                 currentbasis = cp
                 delete!(inside, x)
                 delete!(outside, y)
@@ -163,11 +160,11 @@ end
 function isvalidmatroid(M::BasisMatroid)
     r = rank(M)
     n = size(M)
-    currentbasis = indextoset(first(M.bb), r, n)
+    currentbasis = indextoset(first(M.bitbases), r, n)
     
-    for indexX in M.bb
+    for indexX in M.bitbases
         subsetX = indextoset(indexX, r, n)
-        for indexY in M.bb
+        for indexY in M.bitbases
             subsetY = indextoset(indexY, r, n)
             inside = setdiff(currentbasis, subsetY)
             outside = setdiff(subsetY, currentbasis)
@@ -180,7 +177,7 @@ function isvalidmatroid(M::BasisMatroid)
                     cp = copy(currentbasis)
                     delete!(cp, x)
                     push!(cp, y)
-                    if in(settoindex(cp), M.bb)
+                    if in(settoindex(cp), M.bitbases)
                         currentbasis = cp
                         delete!(inside, x)
                         delete!(outside, y)
@@ -202,7 +199,7 @@ function isvalidmatroid(M::BasisMatroid)
                     cp = copy(currentbasis)
                     delete!(cp, y)
                     push!(cp, x)
-                    if in(settoindex(cp), M.bb)
+                    if in(settoindex(cp), M.bitbases)
                         foundpair = true
                         break
                     end

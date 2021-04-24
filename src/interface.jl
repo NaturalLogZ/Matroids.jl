@@ -27,15 +27,15 @@ abstract type AbstractMatroid{T} end
 # https://github.com/sagemath/sage/blob/develop/src/sage/matroids/matroid.pyx has a list
 
 
-# The following I think is a far upper limit to what we should attempt
+# The following uncommented ones need to be done for each implementation
 rank(M::AbstractMatroid) = _NI("rank") # corresponds to full_rank
-rank(M::AbstractMatroid, X::Vector) = _NI("rank func set")
+# rank(M::AbstractMatroid, X::Vector) = _NI("rank func set") # done in core.jl
 _rank(M::AbstractMatroid, X::Vector) = _NI("unsafe rank func set")
 groundset(M::AbstractMatroid) = _NI("groundset")
-size(M::AbstractMatroid) = _NI("size")
-corank(M::AbstractMatroid) = _NI("corank") # corresponds to full_corank
+# size(M::AbstractMatroid) = _NI("size") # done in core.jl
+# corank(M::AbstractMatroid) = _NI("corank") # (FULL_RANK) core.jl
 
-isvalid(M::AbstractMatroid) = _NI("isvalid")
+# isvalid(M::AbstractMatroid) = _NI("isvalid") # core.jl
 
 # enumerative things
 circuits(M::AbstractMatroid) = _NI("circuits")

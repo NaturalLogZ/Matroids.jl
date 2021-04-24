@@ -51,7 +51,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
                     union!(groundset, b)
                 end
             end
-            M = BasisMatroid(gs=groundset, bs=bases)
+            M = BasisMatroid(groundset=groundset, bases=bases)
             
         elseif :independentsets in keys(kwargs)
             isets = kwargs[:independentsets]
@@ -78,7 +78,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
                 end
             end
             
-            M = BasisMatroid(gs=groundset, bs=bases)
+            M = BasisMatroid(groundset=groundset, bases=bases)
 
         elseif :circuits in keys(kwargs)
             circuits = kwargs[:circuits]
@@ -102,11 +102,13 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
 
             # try the comprehension
             bases = [candidate for candidate in combinations(groundset, rk) if !any(circuit->issubset(circuit, candidate), circuits)]
-            M = BasisMatroid(gs=groundset, bs=bases)
+            M = BasisMatroid(groundset=groundset, bases=bases)
 
         end
 
     end
+
+    # TODO: handle empty input.
 
     return M
 
