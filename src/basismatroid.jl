@@ -19,7 +19,6 @@ mutable struct BasisMatroid{T} <: AbstractMatroid{T}
         if !isnothing(M)
             rank = Matroids.rank(M)
             bases = Matroids.bases(M)
-            #nonbases = Matroids.nonbases(M) use this over bases when implemented (supposedly faster)
             groundset = sort(Matroids.groundset(M))
         end
         
@@ -155,6 +154,22 @@ function _rank(M::BasisMatroid, X::Vector)
     #
     return length(intersect(currentbasis, packedinput))
 
+end
+
+function nonbases(M::BasisMatroid)
+    r = rank(M)
+    n = size(M)
+    input = BitSet(1:r)
+
+    allnonbases = Vector()
+    for idx in 1:binomial(n,r)
+        if !(idx in M.bitbases)
+            nbasisset = indextoset(idx, r, n)
+            nbasis = unmapidxs(nbasisset, groundset(M))
+            push!(allnonbases, nbasis)
+        end
+    end
+    return allnonbases
 end
 
 function isvalidmatroid(M::BasisMatroid)
