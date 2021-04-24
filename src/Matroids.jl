@@ -115,7 +115,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
 end
 
 
-# Put other complicated things after...
 
+# Put other complicated things after...
+include("./catalog.jl")
 
 end
