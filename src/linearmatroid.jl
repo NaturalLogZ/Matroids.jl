@@ -1,7 +1,7 @@
 mutable struct LinearMatroid{T} <: AbstractMatroid{T}
     groundset::Vector{T}
     rank::Int
-    field::AbstractAlgebra.Field
+    # field::AbstractAlgebra.Field
     A::AbstractAlgebra.MatrixElem
     prow::Dict{Int,Int}
     elmap::Dict{T,Int}
@@ -18,7 +18,7 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
         
 
         P = Vector{Int}()
-        if isnothing(field)
+        if isnothing(field) && (typeof(matrix) <: Array)
             field = ""
         end
         if (typeof(field) <: String)
@@ -29,8 +29,11 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
         if typeof(matrix) <: Array
             _matrix = AbstractAlgebra.matrix(field, matrix)
         else
+            if !(typeof(AbstractAlgebra.base_ring(matrix)) <: AbstractAlgebra.Field)
+                error("base ring of matrix should be a field")
+            end
             _matrix = matrix
-            matrix = Matrix(_matrix)
+            # matrix = Matrix(_matrix)
         end
 
         # repr = nothing
@@ -45,8 +48,8 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
         for i in 1:rref[1]
             push!(P, findfirst(!iszero, stdrref[i,:]))
         end
-        A = matrix[1:rref[1],[c for c in 1:Base.size(matrix,2) if !(c in P)]]
-        fieldA = AbstractAlgebra.matrix(field, A)
+        fieldA = _matrix[1:rref[1],[c for c in 1:Base.size(_matrix,2) if !(c in P)]]
+        # fieldA = AbstractAlgebra.matrix(field, A)
 
         # And compute prow
         prow = Dict{Int,Int}()
@@ -54,7 +57,7 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
             prow[P[r]] = r
         end
         r = 1
-        for c in 1:Base.size(matrix,2)
+        for c in 1:Base.size(_matrix,2)
             if !(c in P)
                 prow[c] = r
                 r += 1
@@ -63,9 +66,9 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
 
         # Figure out groundset if not provided
         if isnothing(groundset)
-            groundset = collect(1:Base.size(A,1)+Base.size(A,2))
+            groundset = collect(1:Base.size(fieldA,1)+Base.size(fieldA,2))
         else
-            if length(groundset) != Base.size(A,1)+Base.size(A,2)
+            if length(groundset) != Base.size(fieldA,1)+Base.size(fieldA,2)
                 error("size of groundset doesn't match matrix")
             end
         end
@@ -77,7 +80,7 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
             idxs[groundset[i]] = i
         end
 
-        return new{T}(groundset, rank, field, fieldA, prow, idxs, P)
+        return new{T}(groundset, rank, fieldA, prow, idxs, P)
     end
 
 end
@@ -103,9 +106,8 @@ function stringtofield(string::String)
         return AbstractAlgebra.RealField
     elseif string[1:2] == "GF"
         # Note this only supports finite fields of prime order.
-        # Maybe eventually AbstractAlgebra.jl will get better, but
-        # this is as good as we can get with this package.
-        # (Maybe consider nemo.jl? would have to switch lots of stuff)
+        # If you want other finite fields; generate the matrix of them
+        # yourself using Nemo.jl
         return AbstractAlgebra.GF(parse(Int,string[3:end]))
     end
 
@@ -120,7 +122,7 @@ function _rank(M::LinearMatroid, X::Vector)
     packedinput = packset(X, M.elmap)
     # then find max indep set
 
-    currentbasis = packset(M.basis, M.elmap)
+    currentbasis = BitSet(M.basis)
     inside = setdiff(currentbasis, packedinput)
     outside = setdiff(packedinput, currentbasis)
 
@@ -136,7 +138,7 @@ function _rank(M::LinearMatroid, X::Vector)
                 pivi = piv ^ (-1)
 
                 AbstractAlgebra.multiply_row!(M.A, pivi, px)
-                M.A[px, py] = pivi + one(M.field)
+                M.A[px, py] = pivi + one(first(M.A))
 
                 for r in 1:Base.size(M.A, 1)
                     a = M.A[r, py]
