@@ -154,9 +154,14 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
                 error("groundset doesn't match matrix size")
             end
         end
+        
         M = LinearMatroid(mtx, groundset=groundset, field=field)
 
-
+    elseif key == :matroid
+        if !(typeof(data) <: AbstractMatroid)
+            error("not a matroid")
+        end
+        M = data
     end
 
 

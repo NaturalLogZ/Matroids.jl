@@ -15,6 +15,31 @@ function rank(M::AbstractMatroid, X::Vector)
     return _rank(M, X)
 end
 
+function bases(M::AbstractMatroid)
+    E = groundset(M)
+    r = rank(M)
+
+    allbases = Vector()
+    for X in combinations(E, r)
+        if _rank(M, X) == length(X)
+            push!(allbases, X)
+        end
+    end
+    return allbases
+end
+
+function nonbases(M::AbstractMatroid)
+    E = groundset(M)
+    r = rank(M)
+
+    allnonbases = Vector()
+    for X in combinations(E, r)
+        if _rank(M, X) < length(X)
+            push!(allnonbases, X)
+        end
+    end
+    return allnonbases
+end 
 
 # TODO: - should override this based on implementation
 # if we care about speed.

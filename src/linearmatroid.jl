@@ -131,7 +131,7 @@ function _rank(M::LinearMatroid, X::Vector)
         for y in outside
             # this corresponds to __is_exchange_pair(x,y)
             if !iszero(M.A[M.prow[x],M.prow[y]])
-                # then exchange(x,y)
+
                 px = M.prow[x]
                 py = M.prow[y]
                 piv = M.A[px,py]
@@ -153,7 +153,6 @@ function _rank(M::LinearMatroid, X::Vector)
                 delete!(currentbasis, x)
                 push!(currentbasis, y)
                 
-                
                 delete!(inside, x)
                 delete!(outside, y)
                 break
@@ -161,6 +160,7 @@ function _rank(M::LinearMatroid, X::Vector)
         end
     end
     #
+    M.basis = collect(currentbasis)
     return length(intersect(currentbasis, packedinput))
 
 end
