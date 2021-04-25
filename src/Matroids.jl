@@ -1,8 +1,9 @@
 module Matroids
 
 import Combinatorics: combinations
+import AbstractAlgebra
 
-export AbstractMatroid, BasisMatroid, Matroid,
+export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
 
 rank, groundset, size, corank,
 
@@ -35,6 +36,7 @@ include("./utils.jl")
 include("./core.jl")
 
 include("./basismatroid.jl")
+include("./linearmatroid.jl")
 
 
 
