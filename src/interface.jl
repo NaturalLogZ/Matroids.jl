@@ -50,6 +50,9 @@ brokencircuits(M::AbstractMatroid) = _NI("brokencircuits")
 loops(M::AbstractMatroid) = _NI("loops")
 coloops(M::AbstractMatroid) = _NI("coloops")
 
+
+# This is ~ Graph isomorphism. Sage has an interesting algorithm in matroids.setsystem
+# Maybe try doing that instead of pure brute force.
 isisomorphic(M::AbstractMatroid, N::AbstractMatroid) = _NI("isisomorphic")
 equals(M::AbstractMatroid, N::AbstractMatroid) = _NI("equals")
 
