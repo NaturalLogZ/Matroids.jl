@@ -48,7 +48,7 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
         for i in 1:rref[1]
             push!(P, findfirst(!iszero, stdrref[i,:]))
         end
-        fieldA = _matrix[1:rref[1],[c for c in 1:Base.size(_matrix,2) if !(c in P)]]
+        fieldA = _matrix[1:rref[1],[c for c in 1:size(_matrix,2) if !(c in P)]]
         # fieldA = AbstractAlgebra.matrix(field, A)
 
         # And compute prow
@@ -57,7 +57,7 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
             prow[P[r]] = r
         end
         r = 1
-        for c in 1:Base.size(_matrix,2)
+        for c in 1:size(_matrix,2)
             if !(c in P)
                 prow[c] = r
                 r += 1
@@ -66,9 +66,9 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
 
         # Figure out groundset if not provided
         if isnothing(groundset)
-            groundset = collect(1:Base.size(fieldA,1)+Base.size(fieldA,2))
+            groundset = collect(1:size(fieldA,1)+size(fieldA,2))
         else
-            if length(groundset) != Base.size(fieldA,1)+Base.size(fieldA,2)
+            if length(groundset) != size(fieldA,1)+size(fieldA,2)
                 error("size of groundset doesn't match matrix")
             end
         end
@@ -142,7 +142,7 @@ function _rank(M::LinearMatroid, X::Vector)
                 AbstractAlgebra.multiply_row!(M.A, pivi, px)
                 M.A[px, py] = pivi + one(first(M.A))
 
-                for r in 1:Base.size(M.A, 1)
+                for r in 1:size(M.A, 1)
                     a = M.A[r, py]
                     if !iszero(a) && (r != px)
   

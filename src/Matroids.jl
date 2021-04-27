@@ -6,14 +6,22 @@ import Nemo
 
 export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
 
-rank, groundset, size, corank,
+groundset, size, rank, corank, fullrank, fullcorank,
+
+basis, maxindependent, circuit, fundamentalcircuit, closure,
+cobasis, maxcoindependent, cocircuit, coclosure, fundamentalcocircuit,
+loops, isindependent, isdependent, isbasis, isclosed, iscircuit,
+coloops, iscoindependent, iscodependent, iscobasis, iscoclosed, iscocircuit,
+
+circuits, cocircuits, circuitclosures, bases, nonbases, independentsets, 
+flats, 
 
 isvalidmatroid,
 
-circuits, cocircuits, bases, nonbases,
-flats, coflats, hyperplanes, brokencircuits,
 
-loops, coloops,
+# below are not done yet.
+coflats, hyperplanes, brokencircuits,
+
 
 isisomorphic, equals,
 
@@ -50,7 +58,23 @@ include("./linearmatroid.jl")
 
 
 # Put all matroid implementations before here
+# TODO: convert inputs to vectors properly, or do type validation.
+"""
+    Matroid(groundset=nothing, data=nothing; kwargs...)
 
+Construct a matroid.
+
+You will need to provide a graph or a matrix as `data`, or
+one of the optional kwargs.
+
+# Arguments
+- `groundset` : labels for the groundset of the matroid
+- `data` : a matrix or a graph
+- `bases` : optional; the set of bases of the matroid
+- `independentsets` : optional; the set of the independent sets of the matroid
+- `circuits` : optional; the set of circuits of the matroid
+- `matroid` : optional; an existing matroid
+"""
 function Matroid(groundset=nothing, data=nothing; kwargs...)
     key = nothing
     if isnothing(data)

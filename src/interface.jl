@@ -8,7 +8,12 @@ function groundset(M::AbstractMatroid)
     return _groundset(M)
 end
 
-function size(M::AbstractMatroid)
+"""
+    size(M)
+
+Return the size of the groundset.
+"""
+function Base.size(M::AbstractMatroid)
     return _size(M)
 end
 
@@ -18,6 +23,14 @@ end
 
 function corank(M::AbstractMatroid)
     return _corank(M)
+end
+
+function fullrank(M::AbstractMatroid)
+    return rank(M)
+end
+
+function fullcorank(M::AbstractMatroid)
+    return corank(M)
 end
 
 function rank(M::AbstractMatroid, X::Vector)
