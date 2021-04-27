@@ -144,7 +144,7 @@ function _isbasis(M::AbstractMatroid, X::Vector)
 end
 
 function _iscobasis(M::AbstractMatroid, X::Vector)
-    return _isbasis(setdiff(_groundset(M), X))
+    return _isbasis(M, setdiff(_groundset(M), X))
 end
 
 function _iscircuit(M::AbstractMatroid, X::Vector)

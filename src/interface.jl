@@ -16,6 +16,10 @@ function rank(M::AbstractMatroid)
     return _rank(M)
 end
 
+function corank(M::AbstractMatroid)
+    return _corank(M)
+end
+
 function rank(M::AbstractMatroid, X::Vector)
     if length(X) == 0
         return 0
@@ -24,6 +28,185 @@ function rank(M::AbstractMatroid, X::Vector)
     return _rank(M, X)
 end
 
+function basis(M::AbstractMatroid)
+    return _maxindependent(M, _groundset(M))
+end
+
+function maxindependent(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _maxindependent(M, X)
+end
+
+function circuit(M::AbstractMatroid)
+    return _circuit(M, _groundset(M))
+end
+
+function circuit(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _circuit(M, X)
+end
+
+function fundamentalcircuit(M::AbstractMatroid, B::Vector, e)
+    if !isbasis(B)
+        error("B is not a basis of the matroid")
+    end
+    if !(e in _groundset(M))
+        error("e is not in the groundset")
+    end
+    return _fundamentalcircuit(M, B, e)
+end
+
+function closure(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _closure(M, X)
+end
+
+# I don't want to deal with k closures.
+# Pretty sure this works though.
+# function kclosure(M::AbstractMatroid, X::Vector, k::Int)
+#     _subsetcheck(M, X)
+# 
+#     cur = 0
+#     S = copy(X)
+#     while cur != length(S)
+#         cur = length(S)
+#         temp = Set()
+#         for T in combinations(S, min(k, cur))
+#             union!(temp, _closure(M, T))
+#         end
+#         S = collect(temp)
+#     end
+#     return S
+# end
+
+function corank(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _corank(M, X)
+end
+
+function cobasis(M::AbstractMatroid)
+    return _maxcoindependent(M, _groundset(M))
+end
+
+function maxcoindependent(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _maxcoindependent(M, X)
+end
+
+function coclosure(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _coclosure(M, X)
+end
+
+function cocircuit(M::AbstractMatroid)
+    return _cocircuit(M, _groundset(M))
+end
+
+function cocircuit(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _cocircuit(M, X)
+end
+
+function fundamentalcocircuit(M::AbstractMatroid, B::Vector, e)
+    if !isbasis(B)
+        error("B is not a basis of the matroid")
+    end
+    if !(e in B)
+        error("e is not in B")
+    end
+    return _fundamentalcocircuit(M, B, e)
+end
+
+function loops(M::AbstractMatroid)
+    return _closure(M, [])
+end
+
+function isindependent(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _isindependent(M, X)
+end
+
+function isdependent(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return !_isindependent(M, X)
+end
+
+function isbasis(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _isbasis(M, X)
+end
+
+function isclosed(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _isclosed(M, X)
+end
+
+function iscircuit(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _iscircuit(M, X)
+end
+
+function coloops(M::AbstractMatroid)
+    return _coclosure(M, [])
+end
+
+function iscoindependent(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _iscoindependent(M, X)
+end
+
+function iscodependent(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return !_iscoindependent(M, X)
+end
+
+function iscobasis(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _iscobasis(M, X)
+end
+
+function iscocircuit(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _iscocircuit(M, X)
+end
+
+function iscoclosed(M::AbstractMatroid, X::Vector)
+    _subsetcheck(M, X)
+    return _iscoclosed(M, X)
+end
+
+function circuits(M::AbstractMatroid)
+    # need to lots of conversion to sets to check duplicates.
+    C = Set()
+    for B in bases(M)
+        for e in setdiff(groundset(M), B)
+            ct = Set(_circuit(M, union(B, [e])))
+            push!(C, ct)
+        end
+    end
+    return [collect(c) for c in C]
+end
+
+function cocircuits(M::AbstractMatroid)
+    C = Set()
+    for B in bases(M)
+        for e in B
+            ct = Set(_cocircuit(M, union(setdiff(groundset(M), B), [e])))
+            push!(C, ct)
+        end
+    end
+    return [collect(c) for c in C]
+end
+
+function circuitclosures(M::AbstractMatroid)
+    CC = [Set() for _ in 0:rank(M)]
+    for C in circuits(M)
+        push!(CC[length(C)], Set(closure(M, C)))
+    end
+    out = Dict{Int, Vector}(r=>[collect(c) for c in CC[r+1]] 
+                            for r in 1:rank(M) if !isempty(CC[r+1]))
+    return out
+end
 
 function bases(M::AbstractMatroid)
     E = _groundset(M)
@@ -49,9 +232,73 @@ function nonbases(M::AbstractMatroid)
         end
     end
     return allnonbases
-end 
+end
 
+function independentsets(M::AbstractMatroid)
+    rk = rank(M)
+    res = Vector()
+    T = [Set() for _ in 1:rk]
+    I = [[] for _ in 0:rk]
 
+    r = 1
+    T[1] = setdiff(Set(groundset(M)), _closure(M, []))
+    while r >= 1
+        if r == rk
+            for x in T[r]
+                I[r+1] = union(I[r], [x])
+                push!(res, I[r+1])
+            end
+            T[r] = Set()
+            r -= 1
+        elseif !isempty(T[r])
+            I[r+1] = union(I[r], [pop!(T[r])])
+            push!(res, I[r+1])
+            T[r+1] = setdiff(T[r], _closure(M, I[r+1]))
+            r += 1
+        else
+            r -= 1
+        end
+    end
+    return res
+end
+
+function flats(M::AbstractMatroid, r::Int)
+    if r < 0
+        return []
+    end
+
+    E = groundset(M)
+
+    # dict of elements to ints so can do max/min
+    idxs = Dict()
+    for i in 1:length(E)
+        idxs[E[i]] = i
+    end
+
+    lps = loops(M)
+    flags = [(lps, [], setdiff(E, lps))]
+    for _ in 1:r
+        newflags = []
+        for (F, B, X) in flags
+            while !isempty(X)
+                x = E[minimum(map(w->idxs[w], X))]
+                newbase = union(B, [x])
+                newflat = _closure(M, newbase)
+                newX = setdiff(X, newflat)
+                if maximum(map(w->idxs[w], newbase)) == idxs[x]
+                    if minimum(map(w->idxs[w], setdiff(newflat, F))) == idxs[x]
+                        push!(newflags, (newflat, newbase, newX))
+                    end
+                end
+                X = newX
+            end
+        end
+        flags = newflags
+    end
+    return [f[1] for f in flags]
+end
+
+# coflats depends on dual
 
 
 # TODO: - should override this based on implementation

@@ -99,8 +99,10 @@ end
 function stringtofield(string::String)
     # The following are the list of supported fields
     if string == ""
-        return AbstractAlgebra.QQ
+        return AbstractAlgebra.RealField
     elseif string == "QQ"
+        # This can have some really weird numerical precision problems...
+        # I would say avoid. (M.A can become filled with MB sized fractions)
         return AbstractAlgebra.QQ
     elseif string == "RR"
         return AbstractAlgebra.RealField
@@ -143,6 +145,7 @@ function _rank(M::LinearMatroid, X::Vector)
                 for r in 1:Base.size(M.A, 1)
                     a = M.A[r, py]
                     if !iszero(a) && (r != px)
+  
                         AbstractAlgebra.add_row!(M.A, -a, px, r)
                     end
                 end
