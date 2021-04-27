@@ -33,33 +33,30 @@ function fullcorank(M::AbstractMatroid)
     return corank(M)
 end
 
-function rank(M::AbstractMatroid, X::Vector)
+function rank(M::AbstractMatroid, X)
     if length(X) == 0
         return 0
     end
-    _subsetcheck(M, X)
-    return _rank(M, X)
+    return _rank(M, _subsetcheck(M, X))
 end
 
 function basis(M::AbstractMatroid)
     return _maxindependent(M, _groundset(M))
 end
 
-function maxindependent(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _maxindependent(M, X)
+function maxindependent(M::AbstractMatroid, X)
+    return _maxindependent(M, _subsetcheck(M, X))
 end
 
 function circuit(M::AbstractMatroid)
     return _circuit(M, _groundset(M))
 end
 
-function circuit(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _circuit(M, X)
+function circuit(M::AbstractMatroid, X)
+    return _circuit(M, _subsetcheck(M, X))
 end
 
-function fundamentalcircuit(M::AbstractMatroid, B::Vector, e)
+function fundamentalcircuit(M::AbstractMatroid, B, e)
     if !isbasis(B)
         error("B is not a basis of the matroid")
     end
@@ -69,18 +66,16 @@ function fundamentalcircuit(M::AbstractMatroid, B::Vector, e)
     return _fundamentalcircuit(M, B, e)
 end
 
-function closure(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _closure(M, X)
+function closure(M::AbstractMatroid, X)
+    return _closure(M, _subsetcheck(M, X))
 end
 
 # I don't want to deal with k closures.
 # Pretty sure this works though.
-# function kclosure(M::AbstractMatroid, X::Vector, k::Int)
-#     _subsetcheck(M, X)
+# function kclosure(M::AbstractMatroid, X, k::Int)
 # 
 #     cur = 0
-#     S = copy(X)
+#     S = _subsetcheck(M, X)
 #     while cur != length(S)
 #         cur = length(S)
 #         temp = Set()
@@ -92,35 +87,31 @@ end
 #     return S
 # end
 
-function corank(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _corank(M, X)
+function corank(M::AbstractMatroid, X)
+    return _corank(M, _subsetcheck(M, X))
 end
 
 function cobasis(M::AbstractMatroid)
     return _maxcoindependent(M, _groundset(M))
 end
 
-function maxcoindependent(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _maxcoindependent(M, X)
+function maxcoindependent(M::AbstractMatroid, X)
+    return _maxcoindependent(M, _subsetcheck(M, X))
 end
 
-function coclosure(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _coclosure(M, X)
+function coclosure(M::AbstractMatroid, X)
+    return _coclosure(M, _subsetcheck(M, X))
 end
 
 function cocircuit(M::AbstractMatroid)
     return _cocircuit(M, _groundset(M))
 end
 
-function cocircuit(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _cocircuit(M, X)
+function cocircuit(M::AbstractMatroid, X)
+    return _cocircuit(M, _subsetcheck(M, X))
 end
 
-function fundamentalcocircuit(M::AbstractMatroid, B::Vector, e)
+function fundamentalcocircuit(M::AbstractMatroid, B, e)
     if !isbasis(B)
         error("B is not a basis of the matroid")
     end
@@ -134,58 +125,48 @@ function loops(M::AbstractMatroid)
     return _closure(M, [])
 end
 
-function isindependent(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _isindependent(M, X)
+function isindependent(M::AbstractMatroid, X)
+    return _isindependent(M, _subsetcheck(M, X))
 end
 
-function isdependent(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return !_isindependent(M, X)
+function isdependent(M::AbstractMatroid, X)
+    return !_isindependent(M, _subsetcheck(M, X))
 end
 
-function isbasis(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _isbasis(M, X)
+function isbasis(M::AbstractMatroid, X)
+    return _isbasis(M, _subsetcheck(M, X))
 end
 
-function isclosed(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _isclosed(M, X)
+function isclosed(M::AbstractMatroid, X)
+    return _isclosed(M, _subsetcheck(M, X))
 end
 
-function iscircuit(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _iscircuit(M, X)
+function iscircuit(M::AbstractMatroid, X)
+    return _iscircuit(M, _subsetcheck(M, X))
 end
 
 function coloops(M::AbstractMatroid)
     return _coclosure(M, [])
 end
 
-function iscoindependent(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _iscoindependent(M, X)
+function iscoindependent(M::AbstractMatroid, X)
+    return _iscoindependent(M, _subsetcheck(M, X))
 end
 
-function iscodependent(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return !_iscoindependent(M, X)
+function iscodependent(M::AbstractMatroid, X)
+    return !_iscoindependent(M, _subsetcheck(M, X))
 end
 
-function iscobasis(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _iscobasis(M, X)
+function iscobasis(M::AbstractMatroid, X)
+    return _iscobasis(M, _subsetcheck(M, X))
 end
 
-function iscocircuit(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _iscocircuit(M, X)
+function iscocircuit(M::AbstractMatroid, X)
+    return _iscocircuit(M, _subsetcheck(M, X))
 end
 
-function iscoclosed(M::AbstractMatroid, X::Vector)
-    _subsetcheck(M, X)
-    return _iscoclosed(M, X)
+function iscoclosed(M::AbstractMatroid, X)
+    return _iscoclosed(M, _subsetcheck(M, X))
 end
 
 function circuits(M::AbstractMatroid)

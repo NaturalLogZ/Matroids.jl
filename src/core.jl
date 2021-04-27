@@ -201,8 +201,10 @@ function _iscoclosed(M::AbstractMatroid, X::Vector)
     return true
 end
 
-function _subsetcheck(M::AbstractMatroid, X::Vector)
-    if !issubset(X, _groundset(M))
+function _subsetcheck(M::AbstractMatroid, X)
+    X2 = collect(X)
+    if !issubset(X2, _groundset(M))
         error("X is not a subset of the groundset")
     end
+    return X2
 end

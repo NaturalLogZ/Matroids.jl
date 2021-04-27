@@ -116,7 +116,10 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             for b in bases
                 union!(groundset, b)
             end
+        else
+            groundset = collect(groundset)
         end
+        bases = [collect(b) for b in bases]
         M = BasisMatroid(groundset=groundset, bases=bases)
         
     elseif key == :independentsets
@@ -129,7 +132,11 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             for i in isets
                 union!(groundset, i)
             end
+        else
+            groundset = collect(groundset)
         end
+
+        isets = [collect(i) for i in isets]
 
         # cast a type so stuff doesn't mess up so badly.
         if eltype(eltype(isets)) == Any
@@ -154,6 +161,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             for c in circuits
                 union!(groundset, c)
             end
+        else
+            groundset = collect(groundset)
         end
 
         # construct a basis element to determine rank
@@ -184,6 +193,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             if length(groundset) != Base.size(mtx, 2)
                 error("groundset doesn't match matrix size")
             end
+            groundset = collect(groundset)
         end
         
         M = LinearMatroid(mtx, groundset=groundset, field=field)
