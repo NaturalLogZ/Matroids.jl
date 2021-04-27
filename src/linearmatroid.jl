@@ -115,8 +115,8 @@ function stringtofield(string::String)
 end
 
 
-rank(M::LinearMatroid) = M.rank
-groundset(M::LinearMatroid) = M.groundset
+_rank(M::LinearMatroid) = M.rank
+_groundset(M::LinearMatroid) = M.groundset
 
 function _rank(M::LinearMatroid, X::Vector)
     packedinput = packset(X, M.elmap)

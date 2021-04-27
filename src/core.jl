@@ -1,45 +1,11 @@
 
 # For functions that don't depend on implementation
 
-size(M::AbstractMatroid) = length(groundset(M))
+_size(M::AbstractMatroid) = length(_groundset(M))
 
-corank(M::AbstractMatroid) = size(M) - rank(M)
+_rank(M::AbstractMatroid) = _rank(M, _groundset(M))
 
-function rank(M::AbstractMatroid, X::Vector)
-    if length(X) == 0
-        return 0
-    end
-    if !issubset(X, groundset(M))
-        error("X is not a subset of the groundset")
-    end
-    return _rank(M, X)
-end
-
-function bases(M::AbstractMatroid)
-    E = groundset(M)
-    r = rank(M)
-
-    allbases = Vector()
-    for X in combinations(E, r)
-        if _rank(M, X) == length(X)
-            push!(allbases, X)
-        end
-    end
-    return allbases
-end
-
-function nonbases(M::AbstractMatroid)
-    E = groundset(M)
-    r = rank(M)
-
-    allnonbases = Vector()
-    for X in combinations(E, r)
-        if _rank(M, X) < length(X)
-            push!(allnonbases, X)
-        end
-    end
-    return allnonbases
-end 
+_corank(M::AbstractMatroid) = _size(M) - _rank(M)
 
 """
 returns a maximal independent subset of X in M.
@@ -95,7 +61,7 @@ no input checking
 function _closure(M::AbstractMatroid, X::Vector)
     out = copy(X)
     r = _rank(M, X)
-    Y = setdiff(groundset(M), X)
+    Y = setdiff(_groundset(M), X)
     for el in Y
         push!(out, el)
         if _rank(M, out) > r
@@ -111,7 +77,7 @@ return corank of a subset
 no input checking
 """
 function _corank(M::AbstractMatroid, X::Vector)
-    return length(X) + _rank(M, setdiff(groundset(M), X)) - rank(M)
+    return length(X) + _rank(M, setdiff(_groundset(M), X)) - _rank(M)
 end
 
 function _maxcoindependent(M::AbstractMatroid, X::Vector)
@@ -146,12 +112,12 @@ function _cocircuit(M::AbstractMatroid, X::Vector)
 end
 
 function _fundamentalcocircuit(M::AbstractMatroid, B::Vector, e)
-    return _cocircuit(M, union(setdiff(groundset(M), B), [e]))
+    return _cocircuit(M, union(setdiff(_groundset(M), B), [e]))
 end
 
 function _coclosure(M::AbstractMatroid, X::Vector)
     out = copy(X)
-    Y = setdiff(groundset(M), X)
+    Y = setdiff(_groundset(M), X)
     r = _corank(M, X)
     for el in Y
         push!(out, el)
@@ -171,14 +137,14 @@ function _iscoindependent(M::AbstractMatroid, X::Vector)
 end
 
 function _isbasis(M::AbstractMatroid, X::Vector)
-    if rank(M) == length(X)
+    if _rank(M) == length(X)
         return _isindependent(M, X)
     end
     return false
 end
 
 function _iscobasis(M::AbstractMatroid, X::Vector)
-    return _isbasis(setdiff(groundset(M), X))
+    return _isbasis(setdiff(_groundset(M), X))
 end
 
 function _iscircuit(M::AbstractMatroid, X::Vector)
@@ -209,7 +175,7 @@ end
 
 function _isclosed(M::AbstractMatroid, X::Vector)
     X2 = copy(X)
-    Y = setdiff(groundset(M), X)
+    Y = setdiff(_groundset(M), X)
     r = _rank(M, X)
     for el in Y
         push!(X2, el)
@@ -223,7 +189,7 @@ end
 
 function _iscoclosed(M::AbstractMatroid, X::Vector)
     X2 = copy(X)
-    Y = setdiff(groundset(M), X)
+    Y = setdiff(_groundset(M), X)
     r = _corank(M, X)
     for el in Y
         push!(X2, el)
@@ -235,29 +201,8 @@ function _iscoclosed(M::AbstractMatroid, X::Vector)
     return true
 end
 
-
-# TODO: - should override this based on implementation
-# if we care about speed. (and accuracy...)
-function isvalidmatroid(M::AbstractMatroid)
-    E = groundset(M)
-    for i in 0:size(M)
-        for X in combinations(E, i)
-            rX = _rank(M, X)
-            if rX > i
-                return false
-            end
-            for j in 0:size(M)
-                for Y in combinations(E, j)
-                    rY = _rank(M, Y)
-                    if issubset(X, Y) && rX > rY
-                        return false
-                    end
-                    if (_rank(M, union(X,Y)) + _rank(M, intersect(X,Y)) > rX + rY)
-                        return false
-                    end
-                end
-            end
-        end
+function _subsetcheck(M::AbstractMatroid, X::Vector)
+    if !issubset(X, _groundset(M))
+        error("X is not a subset of the groundset")
     end
-    return true
 end

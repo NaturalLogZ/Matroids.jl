@@ -111,13 +111,15 @@ function BasisMatroid(;M::Union{AbstractMatroid{T}, Nothing}=nothing,
 end
 
 
-rank(M::BasisMatroid) = M.rank
-groundset(M::BasisMatroid) = M.groundset
+_rank(M::BasisMatroid) = M.rank
+_groundset(M::BasisMatroid) = M.groundset
 
-
+"""
+Overwrites default bases implementation.
+"""
 function bases(M::BasisMatroid)
-    r = rank(M)
-    n = size(M)
+    r = _rank(M)
+    n = _size(M)
 
     allbases = Vector()
     for bindex in M.bitbases
@@ -132,7 +134,7 @@ function _rank(M::BasisMatroid, X::Vector)
     packedinput = packset(X, M.elmap)
     # then find max indep set
 
-    currentbasis = indextoset(first(M.bitbases), rank(M), size(M))
+    currentbasis = indextoset(first(M.bitbases), _rank(M), _size(M))
     inside = setdiff(currentbasis, packedinput)
     outside = setdiff(packedinput, currentbasis)
 
@@ -157,15 +159,15 @@ function _rank(M::BasisMatroid, X::Vector)
 end
 
 function nonbases(M::BasisMatroid)
-    r = rank(M)
-    n = size(M)
+    r = _rank(M)
+    n = _size(M)
     input = BitSet(1:r)
 
     allnonbases = Vector()
     for idx in 1:binomial(n,r)
         if !(idx in M.bitbases)
             nbasisset = indextoset(idx, r, n)
-            nbasis = unmapidxs(nbasisset, groundset(M))
+            nbasis = unmapidxs(nbasisset, _groundset(M))
             push!(allnonbases, nbasis)
         end
     end
@@ -173,8 +175,8 @@ function nonbases(M::BasisMatroid)
 end
 
 function isvalidmatroid(M::BasisMatroid)
-    r = rank(M)
-    n = size(M)
+    r = _rank(M)
+    n = _size(M)
     currentbasis = indextoset(first(M.bitbases), r, n)
     
     for indexX in M.bitbases
