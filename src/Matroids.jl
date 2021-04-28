@@ -8,6 +8,7 @@ import Nemo
 import Base: size, ==, show, print, copy, eltype
 
 export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
+RankMatroid, CircuitClosuresMatroid,
 
 groundset, size, rank, corank, fullrank, fullcorank,
 
@@ -57,6 +58,7 @@ include("./core.jl")
 include("./basismatroid.jl")
 include("./linearmatroid.jl")
 include("./rankmatroid.jl")
+include("./circuitclosuresmatroid.jl")
 
 
 
@@ -81,7 +83,7 @@ one of the optional kwargs.
 function Matroid(groundset=nothing, data=nothing; kwargs...)
     key = nothing
     if isnothing(data)
-        for k in [:bases, :independentsets, :circuits, :graph, :matrix, :rankfunction, :circuitclosure, :matroid]
+        for k in [:bases, :independentsets, :circuits, :graph, :matrix, :rankfunction, :circuitclosures, :matroid]
             if k in keys(kwargs)
                 data = kwargs[k]
                 key = k
@@ -181,7 +183,14 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
         # try the comprehension
         bases = [candidate for candidate in combinations(groundset, rk) if !any(circuit->issubset(circuit, candidate), circuits)]
         M = BasisMatroid(groundset=groundset, bases=bases)
-    
+    elseif key == :rankfunction
+        rnkfnc = data
+        if isnothing(groundset)
+            error("need to specify groundset for rank functions")
+        end
+        groundset = collect(groundset)
+        M = RankMatroid(groundset, rnkfnc)
+
     elseif key == :matrix
         mtx = data
         if !(typeof(data) <: Union{Array{W,2}, AbstractAlgebra.MatrixElem} where W)
@@ -200,6 +209,29 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
         end
         
         M = LinearMatroid(mtx, groundset=groundset, field=field)
+    elseif key == :circuitclosures
+        ccs = data
+        # TODO: maybe accept other format & convert to dictionary
+        if !(typeof(data) <: Dict)
+            error("please provide the circuit closures as a dictionary from rank to all circuit closures of that rank")
+        end
+
+        if isnothing(groundset)
+            groundset = Vector()
+            for X in values(ccs)
+                for y in X
+                    union!(groundset, y)
+                end
+            end
+        else
+            groundset = collect(groundset)
+        end
+
+        circuitclosures = Dict{Int, Vector{Vector{eltype(groundset)}}}()
+        for k in keys(ccs)
+            circuitclosures[k] = [collect(X) for X in ccs[k]]
+        end
+        M = CircuitClosuresMatroid(groundset=groundset, circuitclosures=circuitclosures)
 
     elseif key == :matroid
         if !(typeof(data) <: AbstractMatroid)

@@ -62,23 +62,10 @@ function NonFano()
 end
 
 
-
-
-# Until circuit closures; one implementation of Pappus?
-# TODO: replace w/ circuit closure def
 function Pappus()
-    gs = collect(0:8)
-    nbs = [
-        [0,1,2],
-        [0,3,7],
-        [0,4,8],
-        [1,3,6],
-        [1,5,8],
-        [2,4,6],
-        [2,5,7],
-        [6,7,8]
-    ]
-    return BasisMatroid(groundset=gs, nonbases=nbs)
+    gs = collect("abcdefghi")
+    ccs = Dict(2=>[collect(c) for c in ["abc", "def", "ceg", "bfg", "cdh", "afh", "bdi", "aei", "ghi"]], 3=>[collect("abcdefghi")])
+    return CircuitClosuresMatroid(groundset=gs, circuitclosures=ccs)
 end
 
 

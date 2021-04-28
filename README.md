@@ -12,8 +12,9 @@ This is my development cycle.
 
 - Open Julia repl at this directory.
 - type `]` to enter Pkg mode, and `activate .`
+- still in Pkg mode, probably `instantiate` to install all the packages in Project.toml
 - backspace to exit Pkg mode, then `using Revise` (you may need to add Revise first)
-- then `using Matroids`. This allows you to use any exported functions.
+- then `using Matroids`. This allows you to use any exported functions without prefixing them.
 
 Revise package means that whenever you save changes in the source code, next command
 run in the Julia REPL recompiles the code first. (Though some major changes will
@@ -40,8 +41,7 @@ Then the universal matroid constructor code is in `Matroids.jl` after the includ
 which currently processes input and redirects to construct a BasisMatroid.
 
 Specifically, we still need to implement:
-- graphic matroids,
-- rank function matroids <- very easy
+- graphic matroids
 - circuit closure matroids
 - dual matroids, minor matroids, other operations like union, sum, connections? (as objects),
 - regular matroids?
