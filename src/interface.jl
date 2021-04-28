@@ -57,7 +57,7 @@ function circuit(M::AbstractMatroid, X)
 end
 
 function fundamentalcircuit(M::AbstractMatroid, B, e)
-    if !isbasis(B)
+    if !isbasis(M, B)
         error("B is not a basis of the matroid")
     end
     if !(e in _groundset(M))
@@ -112,7 +112,7 @@ function cocircuit(M::AbstractMatroid, X)
 end
 
 function fundamentalcocircuit(M::AbstractMatroid, B, e)
-    if !isbasis(B)
+    if !isbasis(M, B)
         error("B is not a basis of the matroid")
     end
     if !(e in B)
@@ -232,7 +232,8 @@ function independentsets(M::AbstractMatroid)
     rk = rank(M)
     res = Vector()
     T = [Set() for _ in 1:rk]
-    I = [[] for _ in 0:rk]
+    typ = eltype(groundset(M))
+    I = [Vector{typ}() for _ in 0:rk]
 
     r = 1
     T[1] = setdiff(Set(groundset(M)), _closure(M, []))

@@ -4,6 +4,9 @@ import Combinatorics: combinations
 import AbstractAlgebra
 import Nemo
 
+
+import Base: size, ==, show, print, copy, eltype
+
 export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
 
 groundset, size, rank, corank, fullrank, fullcorank,
@@ -53,7 +56,7 @@ include("./core.jl")
 # (like validity) for speed purposes.
 include("./basismatroid.jl")
 include("./linearmatroid.jl")
-
+include("./rankmatroid.jl")
 
 
 
