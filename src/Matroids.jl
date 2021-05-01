@@ -1,14 +1,12 @@
 module Matroids
 
-import Combinatorics: combinations
+using Combinatorics: combinations
 import AbstractAlgebra
-import Nemo
-
-
+using DataStructures: DisjointSets, num_groups
 import Base: size, ==, show, print, copy, eltype
 
 export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
-RankMatroid, CircuitClosuresMatroid,
+RankMatroid, CircuitClosuresMatroid, GraphicMatroid,
 
 groundset, size, rank, corank, fullrank, fullcorank,
 
@@ -59,7 +57,7 @@ include("./basismatroid.jl")
 include("./linearmatroid.jl")
 include("./rankmatroid.jl")
 include("./circuitclosuresmatroid.jl")
-
+include("./graphicmatroid.jl")
 
 
 # Put all matroid implementations before here
@@ -243,8 +241,6 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
     return M
 
 end
-
-
 
 # Put other complicated things after...
 include("./interface.jl")

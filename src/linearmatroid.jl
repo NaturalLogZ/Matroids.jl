@@ -80,7 +80,7 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
             idxs[groundset[i]] = i
         end
 
-        return new{T}(groundset, rank, fieldA, prow, idxs, P)
+        return new{T}(deepcopy(groundset), rank, fieldA, prow, idxs, P)
     end
 
 end

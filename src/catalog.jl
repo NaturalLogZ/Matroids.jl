@@ -4,11 +4,12 @@ lots of work.
 """
 
 module Catalog
-
 using Matroids
 import AbstractAlgebra
-import Nemo
-
+# This will always print a banner unless disabled under env variables.
+# TODO: maybe https://github.com/Nemocas/Nemo.jl/issues/817 will eventually result
+# in a way around this.
+import Nemo: FiniteField
 
 # TODO: compare these two definitions of fano when is_isomorphic is done
 
@@ -36,7 +37,7 @@ function Fano()
 end
 
 function Q6()
-    F, x = Nemo.FiniteField(2, 2, "x")
+    F, x = FiniteField(2, 2, "x")
     mtx = AbstractAlgebra.matrix(F, [1 0 0 1 0 1;
                                      0 1 0 1 1 x;
                                      0 0 1 0 1 1])

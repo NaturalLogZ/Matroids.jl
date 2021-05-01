@@ -15,7 +15,7 @@ mutable struct CircuitClosuresMatroid{T} <: AbstractMatroid{T}
                 error("need to provide both groundset and circuitclosures")
             end
         end
-        return new{T}(groundset, circuitclosures)
+        return new{T}(deepcopy(groundset), deepcopy(circuitclosures))
     end
 end
 

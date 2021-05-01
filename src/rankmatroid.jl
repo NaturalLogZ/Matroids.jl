@@ -9,7 +9,7 @@ mutable struct RankMatroid{T} <: AbstractMatroid{T}
 
 
 
-        return new{T}(groundset, rankfunction)
+        return new{T}(deepcopy(groundset), rankfunction)
     end
 
 end

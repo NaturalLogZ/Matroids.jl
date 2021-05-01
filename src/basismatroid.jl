@@ -96,7 +96,7 @@ mutable struct BasisMatroid{T} <: AbstractMatroid{T}
                 end
             end
         end
-        return new{T}(groundset,rank,bb,bcount,idxs)
+        return new{T}(deepcopy(groundset),rank,bb,bcount,idxs)
     end
 
 end
