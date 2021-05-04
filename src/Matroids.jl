@@ -104,7 +104,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             key = :matroid
         elseif typeof(data) <: Union{Array{W,2}, AbstractAlgebra.MatrixElem} where W
             key = :matrix
-        elseif typeof(data) <: Nothing # Graph here
+        elseif typeof(data) <: Union{Vector{Tuple{W,W}},Vector{Pair{W,W}}} where W
             key = :graph
         else
             key = :independentsets
@@ -230,6 +230,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             circuitclosures[k] = [collect(X) for X in ccs[k]]
         end
         M = CircuitClosuresMatroid(groundset=groundset, circuitclosures=circuitclosures)
+    elseif key == :graph
+        M = GraphicMatroid(data, groundset=groundset)
 
     elseif key == :matroid
         if !(typeof(data) <: AbstractMatroid)
