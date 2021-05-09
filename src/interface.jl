@@ -5,7 +5,7 @@ Some may be overridden by specific matroid implemenations.
 
 
 function groundset(M::AbstractMatroid)
-    return _groundset(M)
+    return copy(_groundset(M))
 end
 
 """
@@ -15,6 +15,10 @@ Return the size of the groundset.
 """
 function Base.size(M::AbstractMatroid)
     return _size(M)
+end
+
+function Base.eltype(M::AbstractMatroid)
+    return eltype(groundset(M))
 end
 
 function rank(M::AbstractMatroid)

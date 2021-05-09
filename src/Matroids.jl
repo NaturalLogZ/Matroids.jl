@@ -3,7 +3,7 @@ module Matroids
 using Combinatorics: combinations
 import AbstractAlgebra
 using DataStructures: DisjointSets, num_groups
-import Base: size, ==, show, print, copy, eltype
+import Base: size, ==, show, copy, eltype # still need to do ==, show, copy
 
 export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
 RankMatroid, CircuitClosuresMatroid, GraphicMatroid,
@@ -247,5 +247,6 @@ end
 # Put other complicated things after...
 include("./interface.jl")
 include("./catalog.jl")
+include("./isomorphism.jl")
 
 end
