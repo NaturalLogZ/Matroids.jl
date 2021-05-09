@@ -235,6 +235,7 @@ end
 function independentsets(M::AbstractMatroid)
     rk = rank(M)
     res = Vector()
+    push!(res, [])
     T = [Set() for _ in 1:rk]
     typ = eltype(groundset(M))
     I = [Vector{typ}() for _ in 0:rk]

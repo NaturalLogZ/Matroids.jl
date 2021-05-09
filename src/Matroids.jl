@@ -18,14 +18,14 @@ coloops, iscoindependent, iscodependent, iscobasis, iscoclosed, iscocircuit,
 circuits, cocircuits, circuitclosures, bases, nonbases, independentsets, 
 flats, 
 
-isvalidmatroid,
+isvalidmatroid, isisomorphic, 
 
 
 # below are not done yet.
 coflats, hyperplanes, brokencircuits,
 
 
-isisomorphic, equals,
+equals,
 
 contract, delete, dual, hasminor,
 
