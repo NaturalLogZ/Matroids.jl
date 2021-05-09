@@ -46,4 +46,11 @@ Specifically, we still need to implement:
 - dual matroids, minor matroids, other operations like union, sum, connections? (as objects),
 - regular matroids?
 
+#### How to get code coverage:
 
+```
+using Coverage
+coverage = process_folder()
+covered_lines, total_lines = get_summary(coverage)
+println("coverage: ", covered_lines/total_lines)
+```
