@@ -73,4 +73,17 @@ end
 
 
 
+function Block_10_5()
+    ccs = Dict(4 => ["abcde", "acdfg", "bdefg", "bcdfh", "abefh", "abcgh", "adegh",
+                    "cefgh", "bcefi", "adefi", "bcdgi", "acegi", "abfgi", "abdhi",
+                    "cdehi", "acfhi", "beghi", "dfghi", "abdfj", "acefj", "abegj",
+                    "cdegj", "bcfgj", "acdhj", "bcehj", "defhj", "bdghj", "afghj",
+                    "abcij", "bdeij", "cdfij", "adgij", "efgij", "aehij", "bfhij",
+                    "cghij"],
+               5 => ["abcdefghij"])
+
+    return Matroid(circuitclosures=ccs)
+end
+
+
 end

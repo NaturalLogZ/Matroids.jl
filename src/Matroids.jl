@@ -122,6 +122,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
         else
             groundset = collect(groundset)
         end
+        groundset = [g for g in groundset]
         bases = [collect(b) for b in bases]
         M = BasisMatroid(groundset=groundset, bases=bases)
         
@@ -138,6 +139,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
         else
             groundset = collect(groundset)
         end
+        groundset = [g for g in groundset]
 
         isets = [collect(i) for i in isets]
 
@@ -167,6 +169,7 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
         else
             groundset = collect(groundset)
         end
+        groundset = [g for g in groundset]
 
         # construct a basis element to determine rank
         b = Set(groundset)
@@ -187,6 +190,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             error("need to specify groundset for rank functions")
         end
         groundset = collect(groundset)
+
+        groundset = [g for g in groundset]
         M = RankMatroid(groundset, rnkfnc)
 
     elseif key == :matrix
@@ -205,6 +210,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
             end
             groundset = collect(groundset)
         end
+
+        groundset = [g for g in groundset]
         
         M = LinearMatroid(mtx, groundset=groundset, field=field)
     elseif key == :circuitclosures
@@ -224,6 +231,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
         else
             groundset = collect(groundset)
         end
+
+        groundset = [g for g in groundset]
 
         circuitclosures = Dict{Int, Vector{Vector{eltype(groundset)}}}()
         for k in keys(ccs)
