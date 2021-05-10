@@ -13,9 +13,18 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
 
     function LinearMatroid{T}(matrix::Union{Array{W,2}, AbstractAlgebra.MatrixElem}; 
         groundset::Union{Vector{T}, Nothing}=nothing,
-        field::Union{String, Nothing, AbstractAlgebra.Field}=nothing) where T where W
+        field::Union{String, Nothing, AbstractAlgebra.Field}=nothing,
+        M::Union{LinearMatroid, Nothing}=nothing) where T where W
 
-        
+        if !isnothing(M)
+            gs = deepcopy(M.groundset)
+            rank = M.rank
+            A = copy(M.A)
+            prow = copy(M.prow)
+            elmap = copy(M.elmap)
+            basis = copy(M.basis)
+            return new{T}(gs, rank, A, prow, elmap, basis)
+        end
 
         P = Vector{Int}()
         if isnothing(field) && (typeof(matrix) <: Array)
@@ -87,13 +96,14 @@ end
 
 function LinearMatroid(matrix::Union{Array{W,2}, AbstractAlgebra.MatrixElem}; 
     groundset::Union{Vector{T}, Nothing}=nothing,
-    field::Union{String, Nothing, AbstractAlgebra.Field}=nothing) where T where W
+    field::Union{String, Nothing, AbstractAlgebra.Field}=nothing,
+    M::Union{LinearMatroid, Nothing}=nothing) where T where W
 
     if isnothing(groundset)
-        return LinearMatroid{Int64}(matrix,groundset=groundset,field=field)
+        return LinearMatroid{Int64}(matrix,groundset=groundset,field=field,M=M)
     end
 
-    return LinearMatroid{T}(matrix,groundset=groundset,field=field)
+    return LinearMatroid{T}(matrix,groundset=groundset,field=field,M=M)
 end
 
 function stringtofield(string::String)
@@ -119,6 +129,32 @@ end
 
 _rank(M::LinearMatroid) = M.rank
 _groundset(M::LinearMatroid) = M.groundset
+
+"""Super specific ==. almost any function will modify
+equality result. """
+==(M::LinearMatroid, N::LinearMatroid) = 
+M.groundset == N.groundset &&
+M.rank == N.rank &&
+M.A == N.A &&
+M.prow == N.prow
+
+function copy(M::LinearMatroid)
+    # # First attach identiy matrix to the left. This is the simplest way I could come up with.
+    # mtx = hcat(one(zero(M.A, AbstractAlgebra.nrows(M.A), AbstractAlgebra.nrows(M.A))), M.A)
+    # # Then construct the groundset based on the order
+    # rows = Vector(undef, rank(M))
+    # for e in M.basis
+    #     rows[M.prow[e]] = M.groundset[e]
+    # end
+    # cols = Vector(undef, corank(M))
+    # for e in setdiff(1:size(M), M.basis)
+    #     cols[M.prow[e]] = M.groundset[e]
+    # end
+    # groundset = vcat(rows, cols)
+    # N = LinearMatroid(mtx, groundset=groundset)
+    N = LinearMatroid{eltype(M.groundset)}(M.A, M=M)
+    return N
+end
 
 function _rank(M::LinearMatroid, X::Vector)
     packedinput = packset(X, M.elmap)

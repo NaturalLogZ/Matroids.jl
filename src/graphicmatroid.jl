@@ -55,7 +55,15 @@ function GraphicMatroid(edgelist::Union{Vector{Tuple{W,W}},Vector{Pair{W,W}}};
     return GraphicMatroid{T,W}(edgelist,groundset=groundset)
 end
 
+==(M::GraphicMatroid, N::GraphicMatroid) = 
+M.groundset == N.groundset &&
+M.edgelist == N.edgelist
 
+function copy(M::GraphicMatroid) 
+    edgelist = [(edge[1], edge[2]) for edge in M.edgelist]
+    N = GraphicMatroid(edgelist, groundset=M.groundset)
+    return N
+end
 
 function _groundset(M::GraphicMatroid)
     return M.groundset

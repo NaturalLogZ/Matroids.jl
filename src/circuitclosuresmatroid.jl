@@ -48,3 +48,12 @@ function _rank(M::CircuitClosuresMatroid, X::Vector)
     end
     return length(I)
 end
+
+==(M::CircuitClosuresMatroid, N::CircuitClosuresMatroid) = 
+M.groundset == N.groundset &&
+M.circuitclosures == N.circuitclosures
+
+function copy(M::CircuitClosuresMatroid)
+    N = CircuitClosuresMatroid(M)
+    return N
+end

@@ -114,6 +114,16 @@ end
 _rank(M::BasisMatroid) = M.rank
 _groundset(M::BasisMatroid) = M.groundset
 
+==(M::BasisMatroid, N::BasisMatroid) = 
+M.groundset == N.groundset &&
+M.rank == N.rank &&
+M.bitbases == N.bitbases
+
+function copy(M::BasisMatroid)
+    N = BasisMatroid(M=M)
+    return N
+end
+
 """
 Overwrites default bases implementation.
 """

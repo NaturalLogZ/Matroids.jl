@@ -27,3 +27,12 @@ end
 function _rank(M::RankMatroid, X::Vector)
     return M.rankfunction(X)
 end
+
+==(M::RankMatroid, N::RankMatroid) = 
+M.groundset == N.groundset &&
+M.rankfunction == N.rankfunction
+
+function copy(M::RankMatroid)
+    N = RankMatroid(M.groundset, M.rankfunction)
+    return N
+end
