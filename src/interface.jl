@@ -4,6 +4,25 @@ Some may be overridden by specific matroid implemenations.
 """
 
 
+function Base.show(io::IO, M::AbstractMatroid)
+    if typeof(M) <: BasisMatroid
+        repr = "bases"
+    elseif typeof(M) <: CircuitClosuresMatroid
+        repr = "circuit closures"
+    elseif typeof(M) <: GraphicMatroid
+        repr = "a graph"
+    elseif typeof(M) <: LinearMatroid
+        repr = "a matrix"
+    elseif typeof(M) <: RankMatroid
+        repr = "a rank function"
+    else
+        repr = "something mysterious"
+    end
+
+    print(io, "Matroid of rank $(rank(M)) on $(size(M)) elements represented as $repr.")
+end
+
+
 function groundset(M::AbstractMatroid)
     return copy(_groundset(M))
 end

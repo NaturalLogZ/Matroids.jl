@@ -3,7 +3,7 @@ module Matroids
 using Combinatorics: combinations
 import AbstractAlgebra
 using DataStructures: DisjointSets, num_groups
-import Base: size, ==, show, copy, eltype # still need to do ==, show, copy
+import Base: size, ==, show, copy, eltype
 
 export AbstractMatroid, BasisMatroid, LinearMatroid, Matroid,
 RankMatroid, CircuitClosuresMatroid, GraphicMatroid,
@@ -24,8 +24,7 @@ isvalidmatroid, isisomorphic,
 # below are not done yet.
 coflats, hyperplanes, brokencircuits,
 
-
-equals,
+# equals - maybe do sorted nonbases = sorted nonbases & sorted groundsets equal.
 
 contract, delete, dual, hasminor,
 
