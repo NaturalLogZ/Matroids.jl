@@ -22,31 +22,37 @@ still break it; requiring you to restart the REPL.)
 
 #### Code structure
 
-Julia reads the code in the files included in Matroids.jl in order. 
 First, we define an AbstractMatroid type which supports a lot of functions.
 For now, each implementation of AbstractMatroid needs to provide a constructor,
 a `_rank(M, X)` function, and a `_groundset(M)` function. However, for performance,
-many other functions should be overwritten (especially `isvalidmatroid`). 
+many other functions should be overwritten (especially `isvalidmatroid`). (Now, please also
+include copy, ==, and update the show function.)
 
-There are some private utility things in `utils.jl` (need more documentation)
+There are some private utility things in `utils.jl` (need more documentation for these)
 and then private universal implementations of functions in `core.jl`. The basic public
-facing functions are in `interface.jl`, but more advance things will probably be
-in a separate file in the future.
+facing functions are in `interface.jl`, but more advanced things like isomorphism live in 
+a separate file.
 
-One specific implementation of matroids & some functions for them is in `basismatroid.jl`.
-Linear matroids (matrices) are in `linearmatroid.jl`. 
-Any other implementations (like graphic matroids, linear matroids) should be put
-in similar files.
 Then the universal matroid constructor code is in `Matroids.jl` after the includes,
-which currently processes input and redirects to construct a BasisMatroid.
+which currently processes input and redirects to construct the correct kind of matroid.
 
 Specifically, we still need to implement:
-- graphic matroids
-- circuit closure matroids
-- dual matroids, minor matroids, other operations like union, sum, connections? (as objects),
-- regular matroids?
+- dual matroids
+- minor matroids
+- coflats, hyperplanes, broken circuts, etc
+- expand the catalog and add infinite categories to the catalog (like uniform, wheel, etc)
+- (more optional) regular matroids, unions, sums, connections
+
+Almost all documentation is missing but the infrastructure is in place. 
+
+Test coverage is at ~50% before the above is implemented; missing tests on validity,
+isomorphism, and some constructors.
+
 
 #### How to get code coverage:
+
+First run the tests with code coverage on. Probably something like: `] test --coverage` to generate .cov files.
+Then in julia repl:
 
 ```
 using Coverage
