@@ -20,7 +20,6 @@ flats,
 
 isvalidmatroid, isisomorphic, 
 
-
 # below are not done yet.
 coflats, hyperplanes, brokencircuits,
 
@@ -39,17 +38,12 @@ An abstract type representing a matroid.
 abstract type AbstractMatroid{T} end
 
 
-
-# We will want to do some sort of checking to make sure all the things
-# are implemented. (See LightGraphs interface.jl)
-
-
 include("./utils.jl")
 include("./core.jl")
 
 
 # Each specific matroid implementation only needs to define
-# a constructor, _groundset(M) and _rank(M, X).
+# a constructor, _groundset(M), _rank(M, X), ==, copy, show
 # However, it is probably good to redefine some other things
 # (like validity) for speed purposes.
 include("./basismatroid.jl")
@@ -60,7 +54,6 @@ include("./graphicmatroid.jl")
 
 
 # Put all matroid implementations before here
-# TODO: convert inputs to vectors properly, or do type validation.
 """
     Matroid(groundset=nothing, data=nothing; kwargs...)
 

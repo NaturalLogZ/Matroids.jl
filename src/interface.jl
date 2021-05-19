@@ -4,7 +4,7 @@ Some may be overridden by specific matroid implemenations.
 """
 
 
-function Base.show(io::IO, M::AbstractMatroid)
+function show(io::IO, M::AbstractMatroid)
     if typeof(M) <: BasisMatroid
         repr = "bases"
     elseif typeof(M) <: CircuitClosuresMatroid
@@ -22,7 +22,11 @@ function Base.show(io::IO, M::AbstractMatroid)
     print(io, "Matroid of rank $(rank(M)) on $(size(M)) elements represented as $repr.")
 end
 
+"""
+    groundset(M)
 
+Return the groundset of the matroid `M`.
+"""
 function groundset(M::AbstractMatroid)
     return copy(_groundset(M))
 end
@@ -30,28 +34,53 @@ end
 """
     size(M)
 
-Return the size of the groundset.
+Return the size of the groundset of the matroid `M`.
 """
-function Base.size(M::AbstractMatroid)
+function size(M::AbstractMatroid)
     return _size(M)
 end
 
-function Base.eltype(M::AbstractMatroid)
+"""
+    eltype(M)
+
+Return the type of groundset elements of the matroid `M`.
+"""
+function eltype(M::AbstractMatroid)
     return eltype(groundset(M))
 end
 
+"""
+    rank(M)
+
+Return the rank of the matroid `M`. Equivalent to `fullrank(M)`.
+"""
 function rank(M::AbstractMatroid)
     return _rank(M)
 end
 
+"""
+    corank(M)
+
+Return the corank of the matroid `M`. Equivalent to `fullcorank(M)`.
+"""
 function corank(M::AbstractMatroid)
     return _corank(M)
 end
 
+"""
+    fullrank(M)
+
+Return the rank of the matroid `M`. Equivalent to `rank(M)`.
+"""
 function fullrank(M::AbstractMatroid)
     return rank(M)
 end
 
+"""
+    fullcorank(M)
+
+Return the corank of the matroid `M`. Equivalent to `corank(M)`.
+"""
 function fullcorank(M::AbstractMatroid)
     return corank(M)
 end
@@ -322,6 +351,11 @@ end
 
 # TODO: - should override this based on implementation
 # if we care about speed. (and accuracy...)
+"""
+    isvalidmatroid(M)
+
+Returns whether `M` is a valid matroid, satisfying the matroid axioms.
+"""
 function isvalidmatroid(M::AbstractMatroid)
     E = _groundset(M)
     for i in 0:_size(M)

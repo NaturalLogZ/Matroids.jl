@@ -1,6 +1,6 @@
 # Should contain all code for determining isomorphisms. 
 
-# will probably be very slow.
+# The following will be slow for large matroids.
 
 
 function isisomorphic(M::AbstractMatroid, N::AbstractMatroid)
@@ -41,6 +41,8 @@ function _isomorphism(S, GS, O, GO, SP=nothing, OP=nothing)
         end
     end
 
+    # Perform a recursive check on possible matchings between elements in the 
+    # two matroids.
     for i in 1:length(SP)
         if length(SP[i]) == p
             SP2, SEP2, sh = _equitablepartition(S, GS, _distinguish(SP, SP[i][1]))
@@ -64,6 +66,7 @@ function _isomorphism(S, GS, O, GO, SP=nothing, OP=nothing)
 
 end
 
+# a helper function to count total occurences of all elements in a set of sets.
 function _incidencecnt(S, G)
     cnt = Dict(x => 0 for x in G)
     for s in S
@@ -74,8 +77,8 @@ function _incidencecnt(S, G)
     return cnt
 end
 
+# partition into elements that are equivalent
 function _equitablepartition(S, G, P=nothing, EP=nothing)
-    # get incidence count for E?
     cnt = _incidencecnt(S,G) 
 
     if isnothing(P)
@@ -162,7 +165,7 @@ function _subsetpartition(S, P, E)
     ED = [(_subsetchar(P, S[e]), e) for e in E]
     sort!(ED)
 
-    # I have no idea what happens here...
+    # I'm not totally sure what's happening here..
     # seems like partitioning on result of the
     # characteristic function.
     EP = []
