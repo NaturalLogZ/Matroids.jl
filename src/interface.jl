@@ -85,6 +85,12 @@ function fullcorank(M::AbstractMatroid)
     return corank(M)
 end
 
+"""
+    rank(M, X)
+
+Return the rank of the subset `X` in the matroid `M`. 
+`X` shold be a subset of the groundset of `M`. 
+"""
 function rank(M::AbstractMatroid, X)
     if length(X) == 0
         return 0
@@ -92,22 +98,51 @@ function rank(M::AbstractMatroid, X)
     return _rank(M, _subsetcheck(M, X))
 end
 
+"""
+    basis(M)
+
+Return an arbitrary basis of the matroid `M`.
+"""
 function basis(M::AbstractMatroid)
     return _maxindependent(M, _groundset(M))
 end
 
+"""
+    maxindependent(M, X)
+
+Return a maximal independent subset of `X` in matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function maxindependent(M::AbstractMatroid, X)
     return _maxindependent(M, _subsetcheck(M, X))
 end
 
+"""
+    circuit(M)
+
+Return a circuit of `M` if one exists. Otherwise raise an error.
+"""
 function circuit(M::AbstractMatroid)
     return _circuit(M, _groundset(M))
 end
 
+"""
+    circuit(M, X)
+
+Return a circuit of `M` contained in `X`. Otherwise raise an error.
+`X` should be a subset of the groundset of `M`.
+"""
 function circuit(M::AbstractMatroid, X)
     return _circuit(M, _subsetcheck(M, X))
 end
 
+"""
+    fundamentalcircuit(M, B, e)
+
+Return the `B`-fundamental circuit using `e`in matroid `M`.
+This is the unique matroid circuit contained in ``B \\cup e``.
+`B` should be a basis of `M` and `e` should be an element of `M` not in `B`.
+"""
 function fundamentalcircuit(M::AbstractMatroid, B, e)
     if !isbasis(M, B)
         error("B is not a basis of the matroid")
@@ -118,6 +153,12 @@ function fundamentalcircuit(M::AbstractMatroid, B, e)
     return _fundamentalcircuit(M, B, e)
 end
 
+"""
+    closure(M, X)
+
+Return the closure of `X` in matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function closure(M::AbstractMatroid, X)
     return _closure(M, _subsetcheck(M, X))
 end
@@ -354,7 +395,7 @@ end
 """
     isvalidmatroid(M)
 
-Returns whether `M` is a valid matroid, satisfying the matroid axioms.
+Returns whether `M` is a valid matroid, i.e. it satisfies the matroid axioms.
 """
 function isvalidmatroid(M::AbstractMatroid)
     E = _groundset(M)
