@@ -5,6 +5,7 @@
 		if issubset(['a','b','c'], X)
 			rank -= 1
 		end
+		return rank
 	end
 	M1 = Matroids.RankMatroid(gs, r1)
 	M2 = Matroids.CircuitClosuresMatroid(M=M1)
@@ -12,7 +13,7 @@
 	@test string(M1) == "Matroid of rank 3 on 4 elements represented as a rank function."
 	@test string(M2) == "Matroid of rank 3 on 4 elements represented as circuit closures."
 	@test string(M3) == "Matroid of rank 3 on 4 elements represented as circuit closures."
-	@test M3 == M2
+	@test isisomorphic(M2, M3)
 	
 
 

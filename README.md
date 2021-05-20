@@ -46,8 +46,7 @@ still break it; requiring you to restart the REPL.)
 
 
 #### Testing
-Test coverage is at ~50% before the above is implemented; missing tests on validity,
-isomorphism, and some constructors.
+Test coverage is at ~71% before the above is implemented.
 
 
 How to get code coverage:
