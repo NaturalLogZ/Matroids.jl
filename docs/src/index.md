@@ -13,7 +13,7 @@ pkg> add https://github.coecis.cornell.edu/rls499/Matroids.jl.git
 
 ### Acknowledgments
 
-A large part of this project is based off of the SageMath implementation of matroids.
+A large part of this project is based off of the [SageMath](https://www.sagemath.org/) implementation of matroids.
 
 
 
