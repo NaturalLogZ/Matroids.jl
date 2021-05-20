@@ -162,6 +162,10 @@
     @test sort([sort(c) for c in res])[13] == collect("bf")
     @test length(flats(M, 5)) == 1
     @test length(flats(M, 4)) == 66
+	
+	FakeM = Matroids.RankMatroid(collect("abcd"), X->max(1, length(X)-1))
+	@test isvalidmatroid(M)
+	@test !isvalidmatroid(FakeM)
 
 
 end
