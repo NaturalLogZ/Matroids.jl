@@ -183,4 +183,4 @@ function _rank(M::LinearMatroid, X::Vector)
 end
 
 # All linear matroids (defined on fields) are valid!
-isvalid(M::LinearMatroid) = true
+isvalidmatroid(M::LinearMatroid) = true
