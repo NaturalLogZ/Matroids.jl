@@ -1,13 +1,10 @@
 mutable struct LinearMatroid{T} <: AbstractMatroid{T}
     groundset::Vector{T}
     rank::Int
-    # field::AbstractAlgebra.Field
     A::AbstractAlgebra.MatrixElem
     prow::Dict{Int,Int}
     elmap::Dict{T,Int}
     basis::Vector{Int}
-    # repr::Union{AbstractAlgebra.MatrixElem, Nothing}
-
 
     # In the future, maybe add support for reduced matrix and keep orig. repr.
 
@@ -42,13 +39,8 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
                 error("base ring of matrix should be a field")
             end
             _matrix = matrix
-            # matrix = Matrix(_matrix)
         end
 
-        # repr = nothing
-        # if keepinitialrepresentation
-        #     repr = copy(_matrix)
-        # end
         
         # Compute A
         rref = AbstractAlgebra.rref(_matrix)
@@ -58,7 +50,6 @@ mutable struct LinearMatroid{T} <: AbstractMatroid{T}
             push!(P, findfirst(!iszero, stdrref[i,:]))
         end
         fieldA = _matrix[1:rref[1],[c for c in 1:size(_matrix,2) if !(c in P)]]
-        # fieldA = AbstractAlgebra.matrix(field, A)
 
         # And compute prow
         prow = Dict{Int,Int}()
@@ -139,19 +130,6 @@ M.A == N.A &&
 M.prow == N.prow
 
 function copy(M::LinearMatroid)
-    # # First attach identiy matrix to the left. This is the simplest way I could come up with.
-    # mtx = hcat(one(zero(M.A, AbstractAlgebra.nrows(M.A), AbstractAlgebra.nrows(M.A))), M.A)
-    # # Then construct the groundset based on the order
-    # rows = Vector(undef, rank(M))
-    # for e in M.basis
-    #     rows[M.prow[e]] = M.groundset[e]
-    # end
-    # cols = Vector(undef, corank(M))
-    # for e in setdiff(1:size(M), M.basis)
-    #     cols[M.prow[e]] = M.groundset[e]
-    # end
-    # groundset = vcat(rows, cols)
-    # N = LinearMatroid(mtx, groundset=groundset)
     N = LinearMatroid{eltype(M.groundset)}(M.A, M=M)
     return N
 end
