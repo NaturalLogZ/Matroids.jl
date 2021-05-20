@@ -5,7 +5,7 @@
 """
     isisomorphic(M, N)
 
-Return whether matroids `M` and `N` are isomorphic.
+Test whether matroids `M` and `N` are isomorphic.
 """
 function isisomorphic(M::AbstractMatroid, N::AbstractMatroid)
     # since we do generate the isomorphism, it would be easy to modify

@@ -1,15 +1,19 @@
+# Matroids.jl
+
+A [Julia](http://julialang.org) package for matroids.
 
 
-```@index
-Order = [:type, :function]
-Pages = ["index.md"]
+### Installation
+
+Matroids.jl is not a registered package. You can install it directly from the github repository:
+
+```julia
+pkg> add https://github.coecis.cornell.edu/rls499/Matroids.jl.git
 ```
 
-```@autodocs
-Modules = [Matroids]
-Pages = [
-    "Matroids.jl",
-    "interface.jl"
-]
-Private = false
-```
+### Acknowledgments
+
+A large part of this project is based off of the [SageMath](https://www.sagemath.org/) implementation of matroids.
+
+
+

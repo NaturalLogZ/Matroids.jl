@@ -2,7 +2,7 @@
 *.jl.cov
 *.jl.mem
 .vscode
-docs/build/
+#docs/build/
 docs/site/
 *.cov
 Manifest.toml

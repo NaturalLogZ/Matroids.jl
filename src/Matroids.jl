@@ -1,3 +1,12 @@
+
+"""
+    Matroids
+
+A Julia package for matroids.
+
+The basic constructor is [`Matroid`](@ref).
+
+"""
 module Matroids
 
 using Combinatorics: combinations
@@ -201,9 +210,8 @@ function Matroid(groundset=nothing, data=nothing; kwargs...)
                 error("groundset doesn't match matrix size")
             end
             groundset = collect(groundset)
+            groundset = [g for g in groundset]
         end
-
-        groundset = [g for g in groundset]
         
         M = LinearMatroid(mtx, groundset=groundset, field=field)
     elseif key == :circuitclosures

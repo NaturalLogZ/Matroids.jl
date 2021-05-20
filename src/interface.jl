@@ -139,7 +139,7 @@ end
 """
     fundamentalcircuit(M, B, e)
 
-Return the `B`-fundamental circuit using `e`in matroid `M`.
+Return the `B`-fundamental circuit using `e` in matroid `M`.
 This is the unique matroid circuit contained in ``B \\cup e``.
 `B` should be a basis of `M` and `e` should be an element of `M` not in `B`.
 """
@@ -180,30 +180,71 @@ end
 #     return S
 # end
 
+"""
+    corank(M, X)
+
+Return the corank of the subset `X` in the matroid `M`. 
+`X` shold be a subset of the groundset of `M`. 
+"""
 function corank(M::AbstractMatroid, X)
     return _corank(M, _subsetcheck(M, X))
 end
 
+"""
+    cobasis(M)
+
+Return an arbitrary cobasis of the matroid `M`.
+"""
 function cobasis(M::AbstractMatroid)
     return _maxcoindependent(M, _groundset(M))
 end
 
+"""
+    maxcoindependent(M, X)
+
+Return a maximal coindependent subset of `X` in matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function maxcoindependent(M::AbstractMatroid, X)
     return _maxcoindependent(M, _subsetcheck(M, X))
 end
 
+"""
+    coclosure(M, X)
+
+Return the coclosure of `X` in matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function coclosure(M::AbstractMatroid, X)
     return _coclosure(M, _subsetcheck(M, X))
 end
 
+"""
+    cocircuit(M)
+
+Return a cocircuit of `M` if one exists. Otherwise raise an error.
+"""
 function cocircuit(M::AbstractMatroid)
     return _cocircuit(M, _groundset(M))
 end
 
+"""
+    cocircuit(M, X)
+
+Return a cocircuit of `M` contained in `X`. Otherwise raise an error.
+`X` should be a subset of the groundset of `M`.
+"""
 function cocircuit(M::AbstractMatroid, X)
     return _cocircuit(M, _subsetcheck(M, X))
 end
 
+"""
+    fundamentalcircuit(M, B, e)
+
+Return the `B`-fundamental cocircuit using `e` in matroid `M`.
+This is the unique matroid cocircuit that intersects `B` only at `e`.
+`B` should be a basis of `M` and `e` should be an element of `M` not in `B`.
+"""
 function fundamentalcocircuit(M::AbstractMatroid, B, e)
     if !isbasis(M, B)
         error("B is not a basis of the matroid")
@@ -214,54 +255,129 @@ function fundamentalcocircuit(M::AbstractMatroid, B, e)
     return _fundamentalcocircuit(M, B, e)
 end
 
+"""
+    loops(M)
+
+Return all the loops of the matroid `M`.
+"""
 function loops(M::AbstractMatroid)
     return _closure(M, [])
 end
 
+"""
+    isindependent(M, X)
+
+Test whether the subset `X` is independent in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function isindependent(M::AbstractMatroid, X)
     return _isindependent(M, _subsetcheck(M, X))
 end
 
+"""
+    isdependent(M, X)
+
+Test whether the subset `X` is dependent in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function isdependent(M::AbstractMatroid, X)
     return !_isindependent(M, _subsetcheck(M, X))
 end
 
+"""
+    isbasis(M, X)
+
+Test whether the subset `X` is a basis in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function isbasis(M::AbstractMatroid, X)
     return _isbasis(M, _subsetcheck(M, X))
 end
 
+"""
+    isclosed(M, X)
+
+Test whether the subset `X` is closed in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function isclosed(M::AbstractMatroid, X)
     return _isclosed(M, _subsetcheck(M, X))
 end
 
+"""
+    iscircuit(M, X)
+
+Test whether the subset `X` is a circuit in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function iscircuit(M::AbstractMatroid, X)
     return _iscircuit(M, _subsetcheck(M, X))
 end
 
+"""
+    coloops(M)
+
+Return all the coloops of the matroid `M`.
+"""
 function coloops(M::AbstractMatroid)
     return _coclosure(M, [])
 end
 
+"""
+    iscoindependent(M, X)
+
+Test whether the subset `X` is coindependent in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function iscoindependent(M::AbstractMatroid, X)
     return _iscoindependent(M, _subsetcheck(M, X))
 end
 
+"""
+    iscodependent(M, X)
+
+Test whether the subset `X` is codependent in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function iscodependent(M::AbstractMatroid, X)
     return !_iscoindependent(M, _subsetcheck(M, X))
 end
 
+"""
+    iscobasis(M, X)
+
+Test whether the subset `X` is a cobasis in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function iscobasis(M::AbstractMatroid, X)
     return _iscobasis(M, _subsetcheck(M, X))
 end
 
+"""
+    iscocircuit(M, X)
+
+Test whether the subset `X` is a cocircuit in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function iscocircuit(M::AbstractMatroid, X)
     return _iscocircuit(M, _subsetcheck(M, X))
 end
 
+"""
+    iscoclosed(M, X)
+
+Test whether the subset `X` is coclosed in the matroid `M`.
+`X` should be a subset of the groundset of `M`.
+"""
 function iscoclosed(M::AbstractMatroid, X)
     return _iscoclosed(M, _subsetcheck(M, X))
 end
 
+"""
+    circuits(M)
+
+Return all the circuits of the matroid `M`.
+"""
 function circuits(M::AbstractMatroid)
     # need to lots of conversion to sets to check duplicates.
     C = Set()
@@ -274,6 +390,11 @@ function circuits(M::AbstractMatroid)
     return [collect(c) for c in C]
 end
 
+"""
+    cocircuits(M)
+
+Return all the cocircuits of the matroid `M`.
+"""
 function cocircuits(M::AbstractMatroid)
     C = Set()
     for B in bases(M)
@@ -285,6 +406,11 @@ function cocircuits(M::AbstractMatroid)
     return [collect(c) for c in C]
 end
 
+"""
+    circuitclosures(M)
+
+Return all the circuit closures of the matroid `M`.
+"""
 function circuitclosures(M::AbstractMatroid)
     CC = [Set() for _ in 0:rank(M)]
     for C in circuits(M)
@@ -295,6 +421,11 @@ function circuitclosures(M::AbstractMatroid)
     return out
 end
 
+"""
+    bases(M)
+
+Return all the bases of the matroid `M`.
+"""
 function bases(M::AbstractMatroid)
     E = _groundset(M)
     r = _rank(M)
@@ -308,6 +439,11 @@ function bases(M::AbstractMatroid)
     return allbases
 end
 
+"""
+    nonbases(M)
+
+Return all the nonbases of the matroid `M`.
+"""
 function nonbases(M::AbstractMatroid)
     E = _groundset(M)
     r = _rank(M)
@@ -321,6 +457,11 @@ function nonbases(M::AbstractMatroid)
     return allnonbases
 end
 
+"""
+    independentsets(M)
+
+Return all the independent sets of the matroid `M`.
+"""
 function independentsets(M::AbstractMatroid)
     rk = rank(M)
     res = Vector()
@@ -351,6 +492,11 @@ function independentsets(M::AbstractMatroid)
     return res
 end
 
+"""
+    flats(M, r)
+
+Return all the flats of rank `r` in the matroid `M`.
+"""
 function flats(M::AbstractMatroid, r::Int)
     if r < 0
         return []
@@ -395,7 +541,7 @@ end
 """
     isvalidmatroid(M)
 
-Returns whether `M` is a valid matroid, i.e. it satisfies the matroid axioms.
+Test whether `M` is a valid matroid, i.e. it satisfies the matroid axioms.
 """
 function isvalidmatroid(M::AbstractMatroid)
     E = _groundset(M)
