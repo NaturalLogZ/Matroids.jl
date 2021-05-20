@@ -10,4 +10,6 @@ m = Matroids.Catalog.Fano()
 
 include("catalog.jl")
 include("isomorphism.jl")
+include("rankmatroid.jl")
+include("linearmatroid.jl")
 include("interface.jl")

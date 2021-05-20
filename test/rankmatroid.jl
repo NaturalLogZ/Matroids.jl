@@ -8,7 +8,7 @@
 	end
 	M1 = Matroids.RankMatroid(gs, r1)
 	M2 = copy(M1)
-	@test string(M1) == "Matroid of rank 3 on 7 elements represented as a rank function."
+	@test string(M1) == "Matroid of rank 3 on 4 elements represented as a rank function."
 	@test M1 == M2
 	
 
