@@ -5,6 +5,7 @@
 ```@meta
 CurrentModule = Matroids
 ```
+
 ## Module
 ```@docs
 Matroids
@@ -28,7 +29,7 @@ Order = [:function]
 Pages = [
     "Matroids.jl",
     "interface.jl",
-    "Isomorphism.jl"
+    "isomorphism.jl"
 ]
 Private = false
 ```

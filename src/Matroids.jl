@@ -1,3 +1,12 @@
+
+"""
+    Matroids
+
+A Julia package for matroids.
+
+The basic constructor is [`Matroid`](@ref).
+
+"""
 module Matroids
 
 using Combinatorics: combinations
