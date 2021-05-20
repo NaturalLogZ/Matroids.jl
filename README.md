@@ -1,55 +1,56 @@
 # Matroids.jl
 Matroids in Julia!
 
+### Quick Start
 
-### A poor development guide
-Will need to investigate proper documentation & testing and maybe more about packages later.
+Matroids.jl is not a registered package. You can install it directly from the github repository:
 
-For now, the only required package is Combinatorics.jl (and Revise.jl too I guess). 
+```
+pkg> add https://github.coecis.cornell.edu/rls499/Matroids.jl.git
+```
 
-#### How to develop.
-This is my development cycle.
+Then load the package and start working with matroids. Create them with the constructor, or use matroids from the catalog.
+```
+julia> using Matroids
+julia> M1 = Matroid("abcd", bases=["ab", "ac"])
+julia> M2 = Matroids.Catalog.Fano()
+julia> circuits(M2)
+```
 
-- Open Julia repl at this directory.
-- type `]` to enter Pkg mode, and `activate .`
-- still in Pkg mode, probably `instantiate` to install all the packages in Project.toml
-- backspace to exit Pkg mode, then `using Revise` (you may need to add Revise first)
-- then `using Matroids`. This allows you to use any exported functions without prefixing them.
+The full documentation is available, but not currently hosted anywhere. 
+The generated HTML files are in the docs/build directory, and can be viewed locally.
+
+### Acknowledgments
+
+A large part of this project is based off of the [SageMath](https://www.sagemath.org/) implementation of matroids.
+
+
+### Development guide
+- Clone this repository & open Julia REPL from it.
+- Type `]` to enter Pkg mode, and `activate .`
+- Still in Pkg mode, probably `instantiate` to install all the packages in Project.toml
+- Backspace to exit Pkg mode, then (optionally) `using Revise` (you may need to add Revise first)
+- Then `using Matroids`. This allows you to use any exported functions without prefixing them.
 
 Revise package means that whenever you save changes in the source code, next command
 run in the Julia REPL recompiles the code first. (Though some major changes will
 still break it; requiring you to restart the REPL.)
 
-#### Code structure
 
-First, we define an AbstractMatroid type which supports a lot of functions.
-For now, each implementation of AbstractMatroid needs to provide a constructor,
-a `_rank(M, X)` function, and a `_groundset(M)` function. However, for performance,
-many other functions should be overwritten (especially `isvalidmatroid`). (Now, please also
-include copy, ==, and update the show function.)
-
-There are some private utility things in `utils.jl` (need more documentation for these)
-and then private universal implementations of functions in `core.jl`. The basic public
-facing functions are in `interface.jl`, but more advanced things like isomorphism live in 
-a separate file.
-
-Then the universal matroid constructor code is in `Matroids.jl` after the includes,
-which currently processes input and redirects to construct the correct kind of matroid.
-
-Specifically, we still need to implement:
+#### Things that should still be implemented:
 - dual matroids
 - minor matroids
 - coflats, hyperplanes, broken circuts, etc
-- expand the catalog and add infinite categories to the catalog (like uniform, wheel, etc)
+- expand the catalog and add infinite categories to the catalog (like wheel, PG, etc)
 - (more optional) regular matroids, unions, sums, connections
 
-Almost all documentation is missing but the infrastructure is in place. 
 
+#### Testing
 Test coverage is at ~50% before the above is implemented; missing tests on validity,
 isomorphism, and some constructors.
 
 
-#### How to get code coverage:
+How to get code coverage:
 
 First run the tests with code coverage on. Probably something like: `] test --coverage` to generate .cov files.
 Then in julia repl:
